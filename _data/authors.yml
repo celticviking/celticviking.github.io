@@ -8,5 +8,5 @@ celticviking:
       icon: "fas fa-fw fa-link"
       url: "https://www.vagabondcelticviking.com"
     - label: "Instagram"
-      icon: "fas fa-fw fa-instagram"
+      icon: "fab fa-fw fa-instagram"
       url: "https://www.instagram.com/vagabondcelticviking/"
