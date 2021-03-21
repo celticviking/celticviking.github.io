@@ -24,11 +24,34 @@ description: >- # this means to ignore newlines until "baseurl:"
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://www.vagabondcelticviking.com" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  celticviking
+github: [metadata]
+search: true
+nav: main
 
 # Build settings
 remote theme: "mmistakes/minimal-mistakes@4.22.0"
+minimal_mistakes_skin: "dark"
 plugins:
   - jekyll-include-cache
+
+include: ["_pages"]
+
+exclude:
+#   - .sass-cache/
+  - .jekyll-cache/
+#   - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+#   - node_modules/
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
+  - .jekyll-asset-cache
+  - .bundle
+  - .asset-cache
+keep_files:
+  - .git
 
 # Exclude from processing.
 # The following items will not be processed, by default.
