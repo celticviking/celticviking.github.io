@@ -29,7 +29,7 @@ search: true
 nav: main
 
 # Build settings
-remote theme: "mmistakes/minimal-mistakes@4.22.0"
+remote_theme: "mmistakes/minimal-mistakes@4.22.0"
 minimal_mistakes_skin: "dark"
 plugins:
   - jekyll-include-cache
