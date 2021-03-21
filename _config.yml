@@ -47,7 +47,7 @@ defaults:
       toc_label: "Table-o-Contents"
       toc_icon: "cog"
       author_profile: true
-      share: true
+      share: false
       tags: true
 
 exclude:
