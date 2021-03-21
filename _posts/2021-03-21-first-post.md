@@ -6,3 +6,5 @@ categories: writing thoughts
 tags: books
 author: celticviking
 ---
+
+Stuff and things.
