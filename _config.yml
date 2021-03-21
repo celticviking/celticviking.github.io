@@ -36,6 +36,20 @@ plugins:
 
 include: ["_pages"]
 
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values: 
+      show_date: true
+      toc: true
+      toc_label: "Table-o-Contents"
+      toc_icon: "cog"
+      author_profile: true
+      share: true
+      tags: true
+
 exclude:
 #   - .sass-cache/
   - .jekyll-cache/
