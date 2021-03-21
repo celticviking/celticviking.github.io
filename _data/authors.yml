@@ -2,7 +2,7 @@
 celticviking:
   name  : "Celtic Viking"
   bio   : "I like stuff. And things."
-  avatar: "/assets/images/makersmark_rosette.jpg"
+  avatar: "/assets/images/makersmark_transparent_icon_png.png"
   links : 
     - label: "Website"
       icon: "fas fa-fw fa-link"
