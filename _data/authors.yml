@@ -1,0 +1,12 @@
+
+celticviking:
+  name  : "Celtic Viking"
+  bio   : "I like stuff. And things."
+  avatar: "/assets/images/markersmark_rosette.jpg"
+  links : 
+    - label: "Website"
+      icon: "fas fa-fw fa-link"
+      url: "https://www.vagabondcelticviking.com"
+    - label: "Instagram"
+      icon: "fas fa-fw fa-instagram"
+      url: "https://www.instagram.com/vagabondcelticviking/"
