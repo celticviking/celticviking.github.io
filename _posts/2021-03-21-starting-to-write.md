@@ -3,7 +3,7 @@ layout: single
 title:  "Starting to Write"
 date:   2021-03-21 15:55:38 -0407
 categories: writing
-tags: books writing 
+tags: books writing writersblock
 author: celticviking
 ---
 ### Begin to Write *Something*!

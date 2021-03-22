@@ -17,3 +17,5 @@ In addition to writing, blacksmithing, woodworking, and digital art fill my time
 The goal, at the end of it all, is to look back on my life and see many lives lived. There is a satisfaction to find there, I think.
 
 I have a degree in piano performance and a minor in world cultural history. I studied anthropology and ethnomusicology. I consistently attempt to learn entirely too many languages at the same time. I'm a certified telephony systems administrator and work with CRM software in the financial industry. This all may be irrelevant to the site. Alternatively, it might not be.
+
+For those who made it this far and wonder about my logo, it is the Younger Futhark runes of my name, stacked atop one another.
