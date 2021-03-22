@@ -7,9 +7,7 @@ tags: books writing
 author: celticviking
 ---
 
-# *Write*
-
-#### Begin to Write *Something*!
+### Begin to Write *Something*!
 
 Writers block happens. Not knowing how to start, happens - and it's okay. When I'm unable to find my groove for what I've set out to write, I change tactics.
 
@@ -23,7 +21,7 @@ In the past I observed progress to be random day to day. Some days I'd write 500
 
 Since adopting this tactic, I can easily accomplish 2,000 words in the same time 500 words used to take me. Occasionally I'll surpass the 4,000 count in the same time I used to write 3,500.
 
-#### Adding Is Easier Than Cutting
+### Adding Is Easier Than Cutting
 
 It took almost a decade to understand this about myself. I wrote as much as the next student for academic projects in college, but I wasn't writing fiction. It wasn't until 2011 that I began to devote downtime to some of my ideas, and begin flirting with the notion of writing a story.
 
@@ -35,13 +33,13 @@ I began changing the way I drafted my stories. I much preferred feedback that su
 
 I do still cut, but significantly less so with this approach. It has a positive psychological impact on my making progress that I appreciate.
 
-#### Playlist It Up - Set The Mood
+### Playlist It Up - Set The Mood
 
 Very rarely do I write in silence if I'm in the comfort of my own home. I queue up music without lyrics that fits the mood of the scene, environment, charcter, or world I'm working on at the time. 
 
 Movie and Game soundtracks dominate these playlists.
 
-#### Note To Self: The Baroque Era Is Over
+### Note To Self: The Baroque Era Is Over
 
 My default writing style is Baroque - which is to say, excessively wordy for no apparent or inherent reason, other than to satisfy my own need to ensure any interpretation on the part of the reader is effectively supported on all sides by enough description to ensure the point I'm attempting to make survives the journey from my mind to their eyes. 
 
