@@ -6,7 +6,6 @@ categories: writing
 tags: books writing 
 author: celticviking
 ---
-
 ### Begin to Write *Something*!
 
 Writers block happens. Not knowing how to start, happens - and it's okay. When I'm unable to find my groove for what I've set out to write, I change tactics.
@@ -15,7 +14,7 @@ For twenty to forty-five minutes I'll open a new document and simply write *some
 
 It can take me a decent chunk of time staring at the page, adjusting my playlist, starting to write, deleting what I wrote, starting to write again, looking back at some other words I've written, etc. before I find a flow.
 
-I've found in recent years that if I start writing - often a *totally different* piece than the story I'm working on, and do that for half an hour, I'm able to get in the zone. When that happens, I conclude at a natural place and switch to the main piece I set out to write initially. more often than not, I'm able to continue my stride and hit my targets, whether they be word-count, scene completion, or something else.
+I've found in recent years that if I start writing - often a *totally different* piece than the story I'm working on, and do that for half an hour, I'm able to get in the zone. When that happens, I conclude at a natural place and switch to the main piece I set out to write initially. More often than not, I'm able to continue my stride and hit my targets, whether they be word-count, scene completion, or something else.
 
 In the past I observed progress to be random day to day. Some days I'd write 500 words I was happy with, while others I'd exceed 3,500.
 
@@ -35,7 +34,7 @@ I do still cut, but significantly less so with this approach. It has a positive 
 
 ### Playlist It Up - Set The Mood
 
-Very rarely do I write in silence if I'm in the comfort of my own home. I queue up music without lyrics that fits the mood of the scene, environment, charcter, or world I'm working on at the time. 
+Very rarely do I write in silence if I'm in the comfort of my own home. I queue up music without lyrics that fits the mood of the scene, environment, character, or world I'm working on at the time. 
 
 Movie and Game soundtracks dominate these playlists.
 
@@ -43,7 +42,7 @@ Movie and Game soundtracks dominate these playlists.
 
 My default writing style is Baroque - which is to say, excessively wordy for no apparent or inherent reason, other than to satisfy my own need to ensure any interpretation on the part of the reader is effectively supported on all sides by enough description to ensure the point I'm attempting to make survives the journey from my mind to their eyes. 
 
-The previous sentence is a perfect explanation of this.
+The previous sentence is a perfect example of Baroque writing.
 
 I still have to remind myself to counter this. I mentally prepare to catch it as I write it. When I glance back at a sentence I ask myself: "What can be removed to complete this?"
 
