@@ -73,6 +73,7 @@ I've used the evolution and separation of the terms to my advantage as a storyte
 ### Helpful Links
 
 **Sites Pertaining to LitRPG and GameLit**
+
 [Goodreads LitRPG list](https://www.goodreads.com/shelf/show/litrpg){:target="_blank"}
 As of this post, 5,886 books are reported in this list tagged as LitRPG.
 
