@@ -74,38 +74,38 @@ I've used the evolution and separation of the terms to my advantage as a storyte
 
 **Sites Pertaining to LitRPG and GameLit**
 
-[Goodreads LitRPG list](https://www.goodreads.com/shelf/show/litrpg){:target="_blank"}
+[Goodreads LitRPG list](https://www.goodreads.com/shelf/show/litrpg){:target="_blank"}  
 As of this post, 5,886 books are reported in this list tagged as LitRPG.
 
-[Goodreads GameLit lists](https://www.goodreads.com/list/tag/gamelit?utf8=%E2%9C%93&id=GameLit){:target="_blank"}
+[Goodreads GameLit lists](https://www.goodreads.com/list/tag/gamelit?utf8=%E2%9C%93&id=GameLit){:target="_blank"}  
 Lists that incorporate the GameLit tag. LitRPG and GameLit are interspersed in these lists.
 
-[Royal Road](https://www.royalroad.com/home){:target="_blank"}
+[Royal Road](https://www.royalroad.com/home){:target="_blank"}  
 Community of Authors and Readers posting stories, many of which are LitRPG and GameLit.
 
-[Level Up - How to write LitRPG](https://www.levelup.pub/how-to-write-litrpg){:target="_blank"}
+[Level Up - How to write LitRPG](https://www.levelup.pub/how-to-write-litrpg){:target="_blank"}  
 LitRPG Publisher with an intro of thoughts on writing specifically for this genre
 
 
 
 **LitRPG Authors**
 
-[Vasily Mahanenko](http://mahanenko.ru/en/){:target="_blank"}
+[Vasily Mahanenko](http://mahanenko.ru/en/){:target="_blank"}  
 Author of The Way of the Shaman series. This is the English version of his site.
 
-[Luke Chmilenko](https://lukechmilenko.com/){:target="_blank"}
+[Luke Chmilenko](https://lukechmilenko.com/){:target="_blank"}  
 Author of the Ascend Online series.
 
-[D. Rus](https://www.goodreads.com/author/show/481586.D_Rus){:target="_blank"}
+[D. Rus](https://www.goodreads.com/author/show/481586.D_Rus){:target="_blank"}  
 Author of the Play to Live series.
 
 
 
 **GameLit Authors**
 
-[Blaise Corvin](https://blaise-corvin.com/){:target="_blank"}
+[Blaise Corvin](https://blaise-corvin.com/){:target="_blank"}  
 Author of the Delvers LLC series.
 
-[Ernest Cline](https://www.ernestcline.com/){:target="_blank"}
+[Ernest Cline](https://www.ernestcline.com/){:target="_blank"}  
 Author of Ready Player One, which was made into a movie in 2018.
 
