@@ -11,7 +11,7 @@ export const site = {
 // Links in the footer. Leave `url` empty to show the name without a link.
 export const elsewhere: { name: string; url: string }[] = [
   { name: 'Instagram', url: 'https://www.instagram.com/vagabondcelticviking/' },
-  { name: 'cyberspace.online', url: '' }, // TODO: profile link for `vahn`
+  { name: 'cyberspace.online', url: 'https://cyberspace.online/vahn' },
   { name: 'GitHub', url: 'https://github.com/celticviking' },
 ];
 

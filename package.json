@@ -3,10 +3,11 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "check-photos": "node scripts/check-photos.mjs"
+    "dev": "node scripts/astro.mjs dev",
+    "build": "node scripts/astro.mjs build",
+    "preview": "node scripts/astro.mjs preview",
+    "check-photos": "node scripts/check-photos.mjs",
+    "astro": "node scripts/astro.mjs"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.3.0",
