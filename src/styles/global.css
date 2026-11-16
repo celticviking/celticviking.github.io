@@ -1,0 +1,197 @@
+/*
+  Global styles for vagabondcelticviking.com
+
+  COLOUR TOKENS
+  Every colour on the site comes from a variable ("token") below. Light and dark
+  are two sets of the same tokens, so components never name a hex code directly.
+  Room pages will later add their own palette block (e.g. [data-palette="library"])
+  that overrides these tokens in both modes.
+
+  How the theme is chosen:
+  1. A tiny script in <head> (see ThemeScript.astro) sets <html data-theme="light|dark">
+     from the visitor's saved choice, or from their system setting if they never chose.
+  2. If JavaScript is off, there is no data-theme attribute and the
+     prefers-color-scheme media query below picks the palette instead.
+*/
+
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #F5F2EC;            /* bone */
+  --ink: #16130F;           /* headings, rules, the mark */
+  --text: #16130F;
+  --text-lead: #2E2924;     /* large intro paragraphs */
+  --text-soft: #4A443D;     /* card blurbs, footer text */
+  --muted: #5E574F;         /* small mono labels */
+  --accent: #A3431A;        /* ember */
+  --mark: #16130F;          /* header mark */
+  --rule: #16130F;          /* section dividers */
+  --rule-soft: #CFC7BA;
+
+  /* floor plan */
+  --wall: #16130F;
+  --wall-w: 2px;            /* inner walls */
+  --wall-outer: 5px;        /* outer walls */
+  --room-bg: #F5F2EC;
+  --room-hover: #EEE8DD;
+  --room-closed: #EFEBE3;
+  --hatch: rgba(22, 19, 15, 0.06);
+  --arc: #16130F;
+  --arc-display: block;     /* door-swing arcs: shown in light mode */
+  --door-clear: 92px;       /* room padding below a side door, so the arc doesn't hit text */
+  --fade-opacity: 0.14;     /* faded photo behind a room, when it has one */
+  --stamp: #8A3A1F;
+
+  --ph-bg: #ECE7DE;
+  --ph-border: #CFC7BA;
+  --chip-border: rgba(22, 19, 15, 0.35);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #14110E;
+  --ink: #ECE4D6;
+  --text: #ECE4D6;
+  --text-lead: #D4CABA;
+  --text-soft: #C4B9A8;
+  --muted: #A79C8C;
+  --accent: #E38A55;
+  --mark: #E38A55;
+  --rule: #3A322A;
+  --rule-soft: #3A322A;
+
+  --wall: #6B6055;
+  --wall-w: 1px;
+  --wall-outer: 3px;
+  --room-bg: #17130F;
+  --room-hover: #1E1914;
+  --room-closed: #15120F;
+  --hatch: rgba(236, 228, 214, 0.04);
+  --arc: #8F8576;
+  --arc-display: none;      /* quieter plan in dark mode: thin walls, door gaps only */
+  --door-clear: 36px;
+  --fade-opacity: 0.2;
+  --stamp: #E38A55;
+
+  --ph-bg: #1E1914;
+  --ph-border: #3A322A;
+  --chip-border: rgba(236, 228, 214, 0.3);
+}
+
+/* No JavaScript: follow the system setting. Keep in sync with the dark block above. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #14110E; --ink: #ECE4D6; --text: #ECE4D6; --text-lead: #D4CABA;
+    --text-soft: #C4B9A8; --muted: #A79C8C; --accent: #E38A55; --mark: #E38A55;
+    --rule: #3A322A; --rule-soft: #3A322A;
+    --wall: #6B6055; --wall-w: 1px; --wall-outer: 3px; --room-bg: #17130F;
+    --room-hover: #1E1914; --room-closed: #15120F; --hatch: rgba(236, 228, 214, 0.04);
+    --arc: #8F8576; --arc-display: none; --door-clear: 36px; --fade-opacity: 0.2; --stamp: #E38A55;
+    --ph-bg: #1E1914; --ph-border: #3A322A; --chip-border: rgba(236, 228, 214, 0.3);
+  }
+}
+
+/* ---------- type ---------- */
+
+:root {
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sc: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'EB Garamond', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-runic: 'Noto Sans Runic', serif;
+  --page-max: 1240px;
+  --gutter: 32px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 19px;
+  line-height: 1.55;
+}
+
+a { color: var(--ink); }
+a:hover { color: var(--accent); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+img { max-width: 100%; height: auto; }
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.muted { color: var(--muted); }
+
+.wrap {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-bottom: 28px;
+}
+.section-head h2 {
+  margin: 0;
+  font-family: var(--font-sc);
+  font-weight: 600;
+  font-size: 40px;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+.section-head p { margin: 0; font-size: 11px; }
+
+.chip {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--chip-border);
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  z-index: 10;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 10px 14px;
+}
+.skip-link:focus { top: 12px; color: var(--bg); }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  :root { --gutter: 20px; }
+  body { font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

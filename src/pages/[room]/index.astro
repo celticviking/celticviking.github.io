@@ -1,0 +1,47 @@
+---
+// TEMPORARY room pages (/house/, /shop/, /lab/, /press/, /about/).
+// Each shows the room's name and its logbook entries until the real page is built
+// (The House and the Library come next, in step 4). Delete a room from this
+// list once it has its own page in src/pages/.
+import Base from '../../layouts/Base.astro';
+import LogCard from '../../components/LogCard.astro';
+import { rooms, type Room } from '../../data/site';
+import { getLog } from '../../lib/log';
+
+export function getStaticPaths() {
+  return rooms.filter((r) => r.open).map((room) => ({ params: { room: room.id }, props: { room } }));
+}
+
+interface Props { room: Room }
+const { room } = Astro.props;
+const entries = await getLog(room.id);
+---
+<Base title={room.name} description={room.blurb}>
+  <div class="wrap page">
+    <header class="page-head">
+      <p class="mono muted">No. {room.no} · <span class="chips" aria-hidden="true">{room.chips.map((c) => <span class="chip" style={`background:${c}`} />)}</span></p>
+      <h1>{room.name}</h1>
+      <p class="lead">{room.blurb}</p>
+      <p class="mono stamp">This room is still being built</p>
+    </header>
+    {entries.length > 0 && (
+      <section aria-labelledby="log-h">
+        <div class="section-head"><h2 id="log-h">From the Logbook</h2></div>
+        <div class="grid">{entries.map((e) => <LogCard entry={e} />)}</div>
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: 80px; padding-bottom: 104px; }
+  .page-head { max-width: 680px; margin-bottom: 72px; }
+  .page-head .mono { margin: 0 0 18px; display: flex; align-items: center; gap: 12px; }
+  .chips { display: inline-flex; gap: 4px; }
+  h1 { margin: 0 0 20px; font-family: var(--font-sc); font-weight: 600; font-size: clamp(44px, 6vw, 68px); line-height: 1.02; }
+  .lead { margin: 0 0 28px; font-size: 21px; color: var(--text-lead); }
+  .stamp { display: inline-block !important; border: 1.5px solid var(--stamp); color: var(--stamp); padding: 6px 10px; transform: rotate(-2deg); }
+  section { border-top: 1px solid var(--rule); padding-top: 40px; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 40px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } .page { padding-top: 56px; } }
+</style>

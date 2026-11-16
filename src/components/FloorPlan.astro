@@ -1,0 +1,132 @@
+---
+// "The Rooms" on Home, drawn as a floor plan. Each room is a link with a door.
+//
+// The look is set by colour tokens in global.css, not here:
+//   --wall-w / --wall-outer   wall thickness (light: 2px/5px, dark: 1px/3px)
+//   --arc-display             door-swing arcs (light: shown, dark: hidden)
+//   --door-clear              top padding that keeps text clear of a side door's arc
+//   --fade-opacity            faded photo behind a room that has `photo` set in data/site.ts
+// So changing the floor-plan style is a few token edits, not a rewrite.
+import { rooms, roomHref } from '../data/site';
+---
+<div class="plan">
+  {rooms.map((room, i) => {
+    const door = i < 3 ? 'bottom' : 'left';
+    const Tag = room.open ? 'a' : 'div';
+    return (
+      <Tag
+        class:list={['room', `door-${door}`, { closed: !room.open }]}
+        href={room.open ? roomHref(room.id) : undefined}
+      >
+        {room.photo && <img class="fade" src={room.photo} alt="" loading="lazy" />}
+        <span class="door-gap" aria-hidden="true" />
+        {room.open && door === 'bottom' && (
+          <svg class="arc arc-bottom" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
+            <path d="M0 48 L0 0" stroke-width="1.5" />
+            <path d="M0 0 A48 48 0 0 1 48 48" stroke-width="1" stroke-dasharray="3 3" />
+          </svg>
+        )}
+        {room.open && (
+          <svg class="arc arc-left" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
+            <path d="M0 0 L48 0" stroke-width="1.5" />
+            <path d="M48 0 A48 48 0 0 1 0 48" stroke-width="1" stroke-dasharray="3 3" />
+          </svg>
+        )}
+        <div class="top">
+          <span class="mono muted">No. {room.no}</span>
+          <span class="chips" aria-hidden="true">
+            {room.chips.map((c) => <span class="chip" style={`background:${c}`} />)}
+          </span>
+        </div>
+        <h3>{room.name}</h3>
+        <p>{room.blurb}</p>
+        <span class:list={['mono', room.open ? 'cta' : 'stamp']}>{room.cta}</span>
+      </Tag>
+    );
+  })}
+</div>
+
+<style>
+  .plan {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--wall-w);
+    padding: var(--wall-outer);
+    background: var(--wall);
+  }
+  .room {
+    position: relative;
+    isolation: isolate;
+    background: var(--room-bg);
+    padding: 36px 30px 40px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text);
+  }
+  a.room:hover { background: var(--room-hover); color: var(--text); }
+  a.room:hover h3 { color: var(--accent); }
+  .door-left { padding-top: var(--door-clear); }
+
+  .closed {
+    background-color: var(--room-closed);
+    background-image: repeating-linear-gradient(135deg, var(--hatch) 0px, var(--hatch) 1px, transparent 1px, transparent 11px);
+  }
+
+  /* The doorway: a gap in the wall, painted in the room's own colour. */
+  .door-gap { position: absolute; background: inherit; }
+  .door-bottom .door-gap { bottom: calc(-1 * var(--wall-w)); left: 36px; width: 48px; height: var(--wall-w); }
+  .door-left .door-gap { left: calc(-1 * var(--wall-w)); top: 20px; width: var(--wall-w); height: 48px; }
+  .room:nth-child(3n + 1).door-left .door-gap { left: calc(-1 * var(--wall-outer)); width: var(--wall-outer); }
+
+  .arc { display: var(--arc-display); position: absolute; fill: none; stroke: var(--arc); }
+  .arc-bottom { bottom: 0; left: 36px; }
+  .arc-left { left: 0; top: 20px; }
+  .door-bottom .arc-left { display: none; }
+
+  .fade {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: var(--fade-opacity);
+    filter: grayscale(0.6);
+  }
+
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .chips { display: flex; gap: 4px; }
+  h3 {
+    margin: 4px 0 0;
+    font-family: var(--font-sc);
+    font-weight: 600;
+    font-size: 34px;
+    line-height: 1.05;
+  }
+  .closed h3 { color: var(--text-soft); }
+  p { margin: 0; color: var(--text-soft); }
+  .cta { margin-top: auto; color: var(--accent); }
+  .door-bottom .cta { padding-bottom: 36px; }
+  .stamp {
+    margin-top: auto;
+    align-self: flex-start;
+    border: 1.5px solid var(--stamp);
+    color: var(--stamp);
+    padding: 6px 10px;
+    transform: rotate(-3deg);
+  }
+
+  @media (max-width: 860px) {
+    .plan { grid-template-columns: 1fr; }
+    .room { min-height: 0; }
+    /* One column: every door sits on the left outer wall. */
+    .door-bottom { padding-top: var(--door-clear); }
+    .door-bottom .cta { padding-bottom: 0; }
+    .room .door-gap { left: calc(-1 * var(--wall-outer)) !important; top: 20px !important; bottom: auto !important; width: var(--wall-outer) !important; height: 48px !important; }
+    .door-bottom .arc-bottom { display: none; }
+    .door-bottom .arc-left { display: var(--arc-display); }
+  }
+</style>

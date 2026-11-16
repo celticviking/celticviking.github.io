@@ -1,0 +1,40 @@
+---
+import HandMark from './HandMark.astro';
+import { site, elsewhere } from '../data/site';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="wrap foot">
+    <div class="colophon">
+      <HandMark width={40} />
+      <p>Every page here carries the same mark I put on my work: drawn by hand first, then adapted for steel, wood, and screens.</p>
+    </div>
+    <div class="meta">
+      <nav class="mono links" aria-label="Elsewhere">
+        {elsewhere.map((l) => (l.url ? <a href={l.url} rel="me noopener">{l.name}</a> : <span>{l.name}</span>))}
+      </nav>
+      <p class="mono muted small">{site.region} · © {year} {site.name}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { border-top: 2px solid var(--rule); }
+  :root[data-theme='dark'] .site-footer { border-top: 1px solid var(--wall); }
+  .foot {
+    padding-top: 48px;
+    padding-bottom: 56px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px 56px;
+  }
+  .colophon { display: flex; align-items: center; gap: 24px; flex: 1 1 420px; max-width: 620px; }
+  .colophon p { margin: 0; font-size: 17px; color: var(--text-soft); }
+  .meta { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+  .links { display: flex; flex-wrap: wrap; gap: 4px 24px; }
+  .links a, .links span { text-decoration: none; padding: 10px 0; }
+  .links a:hover { text-decoration: underline; text-underline-offset: 6px; }
+  .small { margin: 0; font-size: 11px; }
+</style>

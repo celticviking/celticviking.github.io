@@ -1,0 +1,103 @@
+---
+// Home: the entry hall. Hero with the mark, the floor plan of rooms, the latest logbook entries.
+import Base from '../layouts/Base.astro';
+import HandMark from '../components/HandMark.astro';
+import FloorPlan from '../components/FloorPlan.astro';
+import LogCard from '../components/LogCard.astro';
+import { site } from '../data/site';
+import { getLog } from '../lib/log';
+
+const latest = (await getLog()).slice(0, 3);
+---
+<Base>
+  <section class="wrap hero">
+    <figure class="mark-figure">
+      <HandMark width={197} label="The VCV maker’s mark, drawn by hand" />
+      <figcaption>
+        <span class="mono muted">My maker’s mark</span>
+        <span class="mono muted">The Younger Futhark runes of my name, stacked</span>
+        <span class="runes" lang="non-Runr">ᛅ᛫ᚾ᛫ᛏ᛫ᚱ᛫ᛁ᛫ᚢ᛫ᛚ᛫ᚴ</span>
+      </figcaption>
+    </figure>
+    <div class="intro">
+      <p class="mono muted kicker">Writer · pianist · tinkerer · smith · woodworker</p>
+      <h1>A vagabond who finally put down roots.</h1>
+      <p class="lead">I’ve traveled the world, worked many jobs, and lived in a variety of locations, but never set down roots until recently. I was a weekend craftsman with no forge or shop of my own. Now I’m renovating a house built in 1908, am building out a forge and shop of my own, have a workbench, and a room for every world I wandered through on the way here.</p>
+      <p class="lead">This is where I keep my interests, musings, and projects. Have a look.</p>
+      <p class="signature">— {site.signature}</p>
+    </div>
+  </section>
+
+  <section class="wrap rooms" id="rooms" aria-labelledby="rooms-h">
+    <div class="section-head">
+      <h2 id="rooms-h">The Rooms</h2>
+      <p class="mono muted">Plan of the house · not to scale</p>
+    </div>
+    <FloorPlan />
+  </section>
+
+  <section class="bench-section" aria-labelledby="bench-h">
+    <div class="wrap bench-wrap">
+      <div class="section-head">
+        <h2 id="bench-h">Lately on the Bench</h2>
+        <p class="mono muted">Updated when there’s something to show · <a href="/log/">The whole logbook →</a></p>
+      </div>
+      <div class="bench">
+        {latest.map((entry) => <LogCard entry={entry} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-top: 96px;
+    padding-bottom: 104px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 56px 96px;
+  }
+  .mark-figure { margin: 0; flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  figcaption { display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: 260px; text-align: center; }
+  figcaption .mono { font-size: 11px; line-height: 1.6; }
+  .runes {
+    font-family: var(--font-runic);
+    font-size: 22px;
+    letter-spacing: 0.3em;
+    padding-left: 0.3em; /* balances the trailing letter-spacing so the runes sit centred */
+    color: var(--ink);
+  }
+  .intro { flex: 1 1 520px; min-width: 0; max-width: 680px; }
+  .kicker { margin: 0 0 22px; }
+  h1 {
+    margin: 0 0 28px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(44px, 6vw, 76px);
+    line-height: 1.02;
+    letter-spacing: -0.005em;
+  }
+  .lead { margin: 0 0 18px; font-size: 21px; color: var(--text-lead); }
+  .lead:last-of-type { margin-bottom: 34px; }
+  .signature { margin: 0; font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 30px; color: var(--accent); }
+
+  .rooms { padding-bottom: 112px; }
+  .rooms .section-head { margin-bottom: 22px; }
+
+  .bench-section { border-top: 1px solid var(--rule); }
+  .bench-wrap { padding-top: 88px; padding-bottom: 104px; }
+  .bench-wrap .section-head { margin-bottom: 36px; }
+  .bench { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
+
+  @media (max-width: 860px) {
+    .hero { padding-top: 56px; padding-bottom: 72px; gap: 40px; }
+    .intro { flex-basis: 100%; }
+    .mark-figure { width: 100%; }
+  }
+  @media (max-width: 640px) {
+    /* A smaller mark on phones, so the headline shows on the first screen. */
+    .mark-figure :global(.hand-mark) { width: 120px !important; height: 182px !important; }
+    .bench { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+// The whole logbook, newest first, grouped by year.
+import Base from '../../layouts/Base.astro';
+import LogCard from '../../components/LogCard.astro';
+import { getLog } from '../../lib/log';
+
+const entries = await getLog();
+const years = [...new Set(entries.map((e) => e.data.date.getUTCFullYear()))];
+---
+<Base title="Logbook" description="Dated notes from every room of the house, posted when there’s something to show.">
+  <div class="wrap page">
+    <header class="page-head">
+      <p class="mono muted">The Logbook</p>
+      <h1>Notes from every room</h1>
+      <p class="lead">Short dated entries, posted when there’s something to show. No schedule.</p>
+    </header>
+    {years.map((year) => (
+      <section class="year" aria-labelledby={`y${year}`}>
+        <h2 id={`y${year}`} class="mono muted">{year}</h2>
+        <div class="grid">
+          {entries.filter((e) => e.data.date.getUTCFullYear() === year).map((e) => <LogCard entry={e} />)}
+        </div>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: 80px; padding-bottom: 104px; }
+  .page-head { max-width: 680px; margin-bottom: 64px; }
+  .page-head .mono { margin: 0 0 18px; }
+  h1 { margin: 0 0 20px; font-family: var(--font-display); font-weight: 600; font-size: clamp(40px, 5vw, 60px); line-height: 1.05; }
+  .lead { margin: 0; font-size: 21px; color: var(--text-lead); }
+  .year { border-top: 1px solid var(--rule); padding-top: 20px; margin-bottom: 64px; }
+  .year h2 { margin: 0 0 28px; font-size: 12px; font-weight: 400; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 40px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } .page { padding-top: 56px; } }
+</style>

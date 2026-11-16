@@ -1,0 +1,96 @@
+---
+// The light/dark switch in the top menu. A real <button> with role="switch",
+// so keyboards and screen readers understand it. Hidden when JavaScript is off
+// (the site then simply follows the system setting).
+---
+<button class="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Dark mode" title="Switch light / dark">
+  <span class="track" aria-hidden="true">
+    <svg class="icon sun" viewBox="0 0 24 24" width="14" height="14"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></g></svg>
+    <svg class="icon moon" viewBox="0 0 24 24" width="14" height="14"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
+    <span class="knob">
+      <svg class="icon sun" viewBox="0 0 24 24" width="14" height="14"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></g></svg>
+      <svg class="icon moon" viewBox="0 0 24 24" width="14" height="14"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
+    </span>
+  </span>
+</button>
+
+<script>
+  const KEY = 'vcv-theme';
+  const root = document.documentElement;
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.theme-toggle');
+  const system = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function apply(theme: string) {
+    root.setAttribute('data-theme', theme);
+    buttons.forEach((b) => b.setAttribute('aria-checked', String(theme === 'dark')));
+  }
+
+  function saved(): string | null {
+    try { return localStorage.getItem(KEY); } catch { return null; }
+  }
+
+  apply(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+
+  buttons.forEach((b) =>
+    b.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      apply(next);
+      try { localStorage.setItem(KEY, next); } catch { /* private mode: still works for this page */ }
+    })
+  );
+
+  // If the visitor never chose, keep following their system setting live.
+  system.addEventListener('change', (e) => {
+    if (!saved()) apply(e.matches ? 'dark' : 'light');
+  });
+</script>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 0;
+    margin: 0;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  :root:not([data-theme]) .theme-toggle { display: none; }
+
+  .track {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    color: var(--muted);
+  }
+  .track > .icon { position: absolute; top: 6px; }
+  .track > .sun { left: 6px; }
+  .track > .moon { right: 6px; }
+
+  .knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.22s ease;
+  }
+  .knob .icon { position: absolute; }
+  .knob .moon { opacity: 0; }
+
+  :root[data-theme='dark'] .knob { transform: translateX(24px); }
+  :root[data-theme='dark'] .knob .sun { opacity: 0; }
+  :root[data-theme='dark'] .knob .moon { opacity: 1; }
+
+  .theme-toggle:hover .track { border-color: var(--accent); }
+</style>

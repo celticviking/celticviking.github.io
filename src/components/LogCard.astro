@@ -1,0 +1,49 @@
+---
+// One logbook entry as a card ("Lately on the Bench" on Home, and room pages).
+// With a cover photo it shows the photo; without one, a thin band in the room's colours.
+import { Image } from 'astro:assets';
+import { roomById } from '../data/site';
+import { excerpt, monthYear, type LogEntry } from '../lib/log';
+
+interface Props { entry: LogEntry; headingLevel?: 'h2' | 'h3' }
+const { entry, headingLevel = 'h3' } = Astro.props;
+const { title, date, room, cover, coverAlt, draft } = entry.data;
+const r = roomById(room);
+const H = headingLevel;
+---
+<article class="card">
+  {cover ? (
+    <Image class="cover" src={cover} alt={coverAlt ?? ''} widths={[400, 800]} sizes="(max-width: 860px) 100vw, 400px" />
+  ) : (
+    <span class="band" aria-hidden="true">
+      {r.chips.map((c) => <span style={`background:${c}`} />)}
+    </span>
+  )}
+  <p class="mono muted meta">
+    {r.name} · <time datetime={date.toISOString().slice(0, 10)}>{monthYear(date)}</time>
+    {draft && <span class="draft"> · Draft</span>}
+  </p>
+  <H class="title"><a href={`/log/${entry.id}/`}>{title}</a></H>
+  <p class="summary">{excerpt(entry)}</p>
+</article>
+
+<style>
+  .card { position: relative; display: flex; flex-direction: column; gap: 12px; }
+  .cover { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+  .band { display: flex; height: 6px; }
+  .band span { flex: 1; }
+  .meta { margin: 6px 0 0; font-size: 11px; }
+  .draft { color: var(--accent); }
+  .title {
+    margin: 0;
+    font-family: var(--font-sc);
+    font-weight: 600;
+    font-size: 26px;
+    line-height: 1.1;
+  }
+  .title a { text-decoration: none; }
+  /* The whole card is clickable, but only the title is the link (better for screen readers). */
+  .title a::after { content: ''; position: absolute; inset: 0; }
+  .card:hover .title a { color: var(--accent); }
+  .summary { margin: 0; color: var(--text-soft); font-size: 18px; }
+</style>
