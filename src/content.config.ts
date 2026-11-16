@@ -11,6 +11,7 @@
 //   summary:  "One line for cards."    optional; otherwise the first sentences are used
 //   cover:    ./forge-day.jpg          optional photo, next to the .md file (run it through Myndar first)
 //   coverAlt: "A billet on the anvil"  describe the photo for people who can't see it
+//   poem:     true                     optional; keeps every line break as typed (blank line = new stanza)
 //   draft:    true                     optional; shows while previewing locally, never published
 
 import { defineCollection } from 'astro:content';
@@ -29,6 +30,7 @@ const log = defineCollection({
       summary: z.string().optional(),
       cover: image().optional(),
       coverAlt: z.string().optional(),
+      poem: z.boolean().default(false),
       draft: z.boolean().default(false),
     }),
 });

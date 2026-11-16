@@ -16,7 +16,7 @@ export async function getStaticPaths() {
 
 interface Props { entry: LogEntry; newer?: LogEntry; older?: LogEntry }
 const { entry, newer, older } = Astro.props;
-const { title, date, room, tags, cover, coverAlt, draft } = entry.data;
+const { title, date, room, tags, cover, coverAlt, draft, poem } = entry.data;
 const r = roomById(room);
 const { Content } = await render(entry);
 ---
@@ -30,7 +30,7 @@ const { Content } = await render(entry);
       <h1>{title}</h1>
     </header>
     {cover && <Image class="cover" src={cover} alt={coverAlt ?? ''} widths={[800, 1400]} sizes="(max-width: 860px) 100vw, 760px" />}
-    <div class="prose">
+    <div class:list={['prose', { poem }]}>
       <Content />
     </div>
     {tags.length > 0 && <p class="mono muted tags">{tags.join(' · ')}</p>}
@@ -66,6 +66,14 @@ const { Content } = await render(entry);
   .prose :global(blockquote) { margin: 1.4em 0; padding-left: 20px; border-left: 2px solid var(--accent); font-style: italic; }
   .prose :global(img) { display: block; margin: 1.6em 0; }
   .prose :global(hr) { border: 0; border-top: 1px solid var(--rule-soft); margin: 2.4em 0; }
+
+  /* Poems: every line break kept as typed; a blank line starts a new stanza. */
+  .poem :global(p) {
+    white-space: pre-line;
+    margin: 0 0 1.5em;
+    line-height: 1.6;
+  }
+  .poem { font-size: 21px; }
 
   .tags { margin: 48px 0 0; font-size: 11px; }
   .pager {
