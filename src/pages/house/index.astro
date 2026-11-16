@@ -1,0 +1,106 @@
+---
+// The House: every room, finished and planned, in house order.
+import Base from '../../layouts/Base.astro';
+import PhotoSlot from '../../components/PhotoSlot.astro';
+import LogCard from '../../components/LogCard.astro';
+import { getHouseRooms, hasPage, roomUrl, statusLabel, isPrompt, roomNo } from '../../lib/house';
+import { getLog } from '../../lib/log';
+
+const rooms = await getHouseRooms();
+const built = rooms.filter(hasPage);
+const planned = rooms.filter((r) => !hasPage(r));
+const done = rooms.filter((r) => r.data.status === 'finished').length;
+const entries = (await getLog('house')).slice(0, 3);
+---
+<Base title="The House" description="A house built in 1908, renovated one room at a time, each room with its own theme.">
+  <div class="wrap page">
+    <header class="page-head">
+      <p class="mono muted">{done} rooms done · {rooms.length - done} to go</p>
+      <h1>The House</h1>
+      <p class="lead">A house built in 1908, renovated one room at a time. Every room has its own theme, and I designed all of them except the kitchen’s original layout.</p>
+      <p class="lead prompt">[Why give every room its own theme? A sentence or two in your words.]</p>
+    </header>
+
+    <ul class="rooms">
+      {built.map((r) => (
+        <li class="room">
+          <a class="room-link" href={roomUrl(r)}>
+            <span class="strip" aria-hidden="true">
+              {r.data.swatches.slice(0, 6).map((s) => <span style={`background:${s.hex}`} />)}
+            </span>
+            <PhotoSlot photo={r.data.wide?.photo} alt={r.data.wide?.alt} label={r.data.wide?.label ?? 'Photo'} ratio="3 / 2" sizes="(max-width: 860px) 100vw, 580px" />
+            <span class="mono muted small">No. {roomNo(r)}</span>
+            <span class="name">{r.data.title}</span>
+            {r.data.tagline && <span class:list={['tagline', { prompt: isPrompt(r.data.tagline) }]}>{r.data.tagline}</span>}
+            <span class="mono status">{statusLabel(r)} →</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {planned.length > 0 && (
+      <section class="planned" aria-labelledby="planned-h">
+        <div class="section-head"><h2 id="planned-h">Still to Come</h2></div>
+        <ul class="planned-list">
+          {planned.map((r) => (
+            <li>
+              <span class="strip empty" aria-hidden="true" />
+              <span class="mono muted small">No. {roomNo(r)}</span>
+              <span class="name">{r.data.title}</span>
+              {r.data.tagline && <span class:list={['tagline', { prompt: isPrompt(r.data.tagline) }]}>{r.data.tagline}</span>}
+              <span class="mono stamp">{statusLabel(r)}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {entries.length > 0 && (
+      <section class="log" aria-labelledby="log-h">
+        <div class="section-head"><h2 id="log-h">From the Logbook</h2></div>
+        <div class="grid">{entries.map((e) => <LogCard entry={e} />)}</div>
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: 80px; padding-bottom: 112px; }
+  .page-head { max-width: 720px; margin-bottom: 72px; }
+  .page-head .mono { margin: 0 0 18px; }
+  h1 { margin: 0 0 24px; font-family: var(--font-sc); font-weight: 600; font-size: clamp(44px, 6vw, 72px); line-height: 1.02; }
+  .lead { margin: 0 0 16px; font-size: 21px; color: var(--text-lead); }
+  .lead.prompt { color: var(--muted); }
+
+  .rooms { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px 40px; }
+  .room-link { display: flex; flex-direction: column; gap: 12px; height: 100%; text-decoration: none; color: var(--text); }
+  .room-link:hover .name { color: var(--accent); }
+  .strip { display: flex; height: 8px; }
+  .strip span { flex: 1; }
+  .strip.empty { background-image: repeating-linear-gradient(135deg, var(--rule-soft) 0px, var(--rule-soft) 1px, transparent 1px, transparent 6px); }
+  .small { font-size: 11px; margin-top: 6px; }
+  .name { font-family: var(--font-sc); font-weight: 600; font-size: 32px; line-height: 1.08; }
+  .tagline { color: var(--text-soft); font-size: 18px; }
+  .status { margin-top: auto; padding-top: 6px; color: var(--accent); }
+
+  .planned { margin-top: 112px; border-top: 1px solid var(--rule); padding-top: 40px; }
+  .planned-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
+  .planned-list li { display: flex; flex-direction: column; gap: 10px; }
+  .planned-list .name { font-size: 26px; color: var(--text-soft); }
+  .stamp {
+    margin-top: 6px;
+    align-self: flex-start;
+    border: 1.5px solid var(--stamp);
+    color: var(--stamp);
+    padding: 6px 10px;
+    transform: rotate(-2deg);
+  }
+
+  .log { margin-top: 112px; border-top: 1px solid var(--rule); padding-top: 40px; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 40px; }
+
+  @media (max-width: 860px) {
+    .page { padding-top: 56px; }
+    .rooms, .grid, .planned-list { grid-template-columns: 1fr; }
+  }
+</style>

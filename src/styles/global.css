@@ -168,6 +168,23 @@ img { max-width: 100%; height: auto; }
   border: 1px solid var(--chip-border);
 }
 
+/* Placeholder copy in [brackets]: a prompt for the owner's own words. */
+.prompt { font-style: italic; color: var(--muted); }
+
+/* A photo slot with no photo yet: a hatched box describing the shot that goes here. */
+.ph {
+  background-color: var(--ph-bg);
+  background-image: repeating-linear-gradient(135deg, var(--hatch) 0px, var(--hatch) 1px, transparent 1px, transparent 10px);
+  border: 1px solid var(--ph-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  text-align: center;
+  padding: 12px;
+  font-size: 11px;
+}
+
 .skip-link {
   position: absolute;
   left: 16px;

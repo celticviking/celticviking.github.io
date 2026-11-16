@@ -1,0 +1,228 @@
+---
+// One room of the house, built from its Markdown file in src/content/house/.
+// The layout follows the Library mockup; each room swaps in its own palette.
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PhotoSlot from '../../components/PhotoSlot.astro';
+import LogCard from '../../components/LogCard.astro';
+import { getHouseRooms, hasPage, roomUrl, statusLabel, isPrompt, roomNo, type HouseRoom } from '../../lib/house';
+import { getLog } from '../../lib/log';
+
+export async function getStaticPaths() {
+  const all = await getHouseRooms();
+  const withPages = all.filter(hasPage);
+  return withPages.map((room, i) => ({
+    params: { room: room.id },
+    props: { room, prev: withPages[i - 1], next: withPages[i + 1], total: all.length },
+  }));
+}
+
+interface Props { room: HouseRoom; prev?: HouseRoom; next?: HouseRoom; total: number }
+const { room, prev, next, total } = Astro.props;
+const d = room.data;
+await render(room);
+// The story text, with paragraphs written entirely in [square brackets] marked as prompts.
+const story = (room.rendered?.html ?? '').replace(/<p>(\[[^<]*\])<\/p>/g, '<p class="prompt">$1</p>');
+const entries = (await getLog('house')).filter((e) => e.data.houseRoom?.id === room.id);
+const pad = (n: number) => String(n).padStart(2, '0');
+const beforeAfter = [
+  { name: 'Before', s: d.before },
+  { name: 'After', s: d.after },
+].flatMap(({ name, s }) => (s ? [{ name, s }] : []));
+---
+<Base title={d.title} description={isPrompt(d.tagline) ? `${d.title}, a room in a 1908 house.` : d.tagline} palette={d.palette}>
+  <section class="band">
+    <div class="wrap band-inner">
+      <p class="mono crumb"><a href="/house/">The House</a> / No. {roomNo(room)} of {pad(total)}</p>
+      <h1>{d.title}</h1>
+      {d.tagline && <p class:list={['tagline', { 'is-prompt': isPrompt(d.tagline) }]}>{d.tagline}</p>}
+      <dl class="facts">
+        {d.facts.map((f) => (
+          <div><dt class="mono">{f.label}</dt><dd class:list={{ 'is-prompt': isPrompt(f.value) }}>{f.value}</dd></div>
+        ))}
+        <div><dt class="mono">Status</dt><dd class:list={{ 'is-prompt': isPrompt(statusLabel(room)) }}>{statusLabel(room)}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  {d.wide && (
+    <section class="wrap block first">
+      <PhotoSlot photo={d.wide.photo} alt={d.wide.alt} label={d.wide.label} ratio="16 / 9" sizes="(max-width: 1240px) 100vw, 1176px" eager />
+    </section>
+  )}
+
+  {(d.before || d.after) && (
+    <section class="wrap block" aria-labelledby="ba-h">
+      <h2 id="ba-h">Before &amp; After</h2>
+      <div class="two">
+        {beforeAfter.map(({ name, s }) => (
+          <figure>
+            <PhotoSlot photo={s.photo} alt={s.alt} label={s.label} ratio="4 / 3" sizes="(max-width: 860px) 100vw, 572px" />
+            <figcaption>
+              <span class="mono muted small">{name}</span>
+              {s.caption && <span class:list={['caption', { prompt: isPrompt(s.caption) }]}>{s.caption}</span>}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {d.swatches.length > 0 && (
+    <section class="wrap block" aria-labelledby="pal-h">
+      <div class="section-head">
+        <h2 id="pal-h">The Palette</h2>
+        {d.swatchNote && <p class="mono muted">{d.swatchNote}</p>}
+      </div>
+      <ul class="swatches" style={`--cols:${d.swatches.length <= 6 ? d.swatches.length : Math.ceil(d.swatches.length / 2)}`}>
+        {d.swatches.map((s) => (
+          <li>
+            <span class="swatch" style={`background:${s.hex}`} aria-hidden="true" />
+            <span class="mono small">{s.name}</span>
+            <span class="where">{s.where} · {s.hex}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <section class="wrap block notes">
+    <div class="story">
+      <h2>What I Was Going For</h2>
+      <div class="prose" set:html={story} />
+    </div>
+    {(d.made.length > 0 || d.found) && (
+      <aside class="aside">
+        {d.made.length > 0 && (
+          <>
+            <h3 class="mono">Made or restored by hand</h3>
+            <ul class="made">
+              {d.made.map((m) => (
+                <li>
+                  <span class:list={['piece', { prompt: isPrompt(m.piece) }]}>{m.piece}</span>{' '}
+                  <span class:list={{ prompt: isPrompt(m.what) }}>— {m.what}</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+        {d.found && (
+          <>
+            <h3 class="mono">Found, not made</h3>
+            <p class:list={['found', { prompt: isPrompt(d.found) }]}>{d.found}</p>
+          </>
+        )}
+      </aside>
+    )}
+  </section>
+
+  {d.details.length > 0 && (
+    <section class="wrap block" aria-labelledby="det-h">
+      <h2 id="det-h">Details</h2>
+      <div class="three">
+        {d.details.map((s) => (
+          <figure>
+            <PhotoSlot photo={s.photo} alt={s.alt} label={s.label} ratio="1 / 1" sizes="(max-width: 860px) 100vw, 376px" />
+            {s.caption && <figcaption class:list={['caption', { prompt: isPrompt(s.caption) }]}>{s.caption}</figcaption>}
+          </figure>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {entries.length > 0 && (
+    <section class="wrap block" aria-labelledby="log-h">
+      <h2 id="log-h">From the Logbook</h2>
+      <div class="three">{entries.map((e) => <LogCard entry={e} />)}</div>
+    </section>
+  )}
+
+  <nav class="wrap rooms-nav" aria-label="Other rooms">
+    <div class="pager">
+      {prev ? (
+        <a href={roomUrl(prev)}><span class="mono muted small">← No. {roomNo(prev)}</span><span class="name">{prev.data.title}</span></a>
+      ) : (
+        <a href="/house/"><span class="mono muted small">←</span><span class="name">All rooms</span></a>
+      )}
+      {next ? (
+        <a class="right" href={roomUrl(next)}><span class="mono muted small">No. {roomNo(next)} →</span><span class="name">{next.data.title}</span></a>
+      ) : (
+        <a class="right" href="/house/"><span class="mono muted small">→</span><span class="name">All rooms</span></a>
+      )}
+    </div>
+  </nav>
+</Base>
+
+<style>
+  .band { background: var(--band); color: var(--band-text); }
+  .band-inner { padding-top: 80px; padding-bottom: 88px; }
+  .crumb { margin: 0 0 26px; color: var(--band-label); }
+  .crumb a { color: var(--band-label); }
+  .crumb a:hover { color: var(--band-text); }
+  h1 {
+    margin: 0 0 20px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(44px, 6.4vw, 88px);
+    line-height: 1;
+    letter-spacing: -0.005em;
+    max-width: 14ch;
+  }
+  .tagline { margin: 0 0 48px; font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 28px; color: var(--band-sub); }
+  .is-prompt { opacity: 0.8; font-style: italic; }
+  .facts { margin: 0; display: flex; flex-wrap: wrap; gap: 20px 56px; border-top: 1px solid var(--band-rule); padding-top: 22px; }
+  .facts dt { color: var(--band-label); font-size: 11px; }
+  .facts dd { margin: 6px 0 0; font-size: 20px; }
+
+  .block { padding-top: 96px; }
+  .block.first { padding-top: 56px; }
+  .block h2, .story h2 {
+    margin: 0 0 28px;
+    font-family: var(--font-sc);
+    font-weight: 600;
+    font-size: 40px;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+  }
+  .small { font-size: 11px; }
+  figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+  figcaption { display: flex; flex-direction: column; gap: 4px; }
+  .caption { color: var(--text-soft); }
+
+  .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+  .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+
+  /* Swatches split into even rows: up to 6 in one row, more than 6 in two balanced rows. */
+  .swatches { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 28px 20px; }
+  .swatches li { display: flex; flex-direction: column; gap: 10px; }
+  .swatch { height: 132px; border: 1px solid var(--chip-border); }
+  .where { font-size: 16px; color: var(--muted); }
+
+  .notes { display: flex; flex-wrap: wrap; gap: 48px 80px; }
+  .story { flex: 1 1 560px; min-width: 0; max-width: 700px; }
+  .prose :global(p) { margin: 0 0 18px; color: var(--text-lead); }
+  .prose :global(p.prompt) { color: var(--muted); }
+  .aside { flex: 1 1 320px; min-width: 0; max-width: 420px; border-top: 2px solid var(--rule); padding-top: 22px; align-self: flex-start; }
+  .aside h3 { margin: 0 0 18px; font-weight: 500; font-size: 12px; }
+  .made { margin: 0 0 36px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .made li { border-bottom: 1px solid var(--rule-soft); padding-bottom: 14px; }
+  .piece { font-weight: 500; }
+  .found { margin: 0; font-size: 17px; }
+
+  .rooms-nav { padding-top: 104px; padding-bottom: 96px; }
+  .pager { display: flex; flex-wrap: wrap; border-top: 2px solid var(--rule); border-bottom: 2px solid var(--rule); }
+  .pager a { flex: 1 1 320px; padding: 28px 0; text-decoration: none; display: flex; flex-direction: column; gap: 6px; }
+  .pager a.right { align-items: flex-end; text-align: right; }
+  .pager .name { font-family: var(--font-sc); font-weight: 600; font-size: 28px; line-height: 1.15; }
+  .pager a:hover .name { color: var(--accent); }
+
+  @media (max-width: 860px) {
+    .band-inner { padding-top: 56px; padding-bottom: 64px; }
+    .tagline { font-size: 24px; margin-bottom: 36px; }
+    .block { padding-top: 72px; }
+    .two, .three { grid-template-columns: 1fr; }
+    .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .swatch { height: 96px; }
+    .pager a.right { align-items: flex-start; text-align: left; }
+  }
+</style>

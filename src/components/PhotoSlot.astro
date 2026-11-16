@@ -1,0 +1,33 @@
+---
+// A photo, or, until there is one, a hatched placeholder describing the shot.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  photo?: ImageMetadata;
+  alt?: string;
+  label: string;
+  ratio: string;            // e.g. '16 / 9'
+  sizes: string;            // how wide the photo shows, for responsive images
+  widths?: number[];
+  eager?: boolean;          // true for the first photo on a page
+}
+const { photo, alt = '', label, ratio, sizes, widths = [480, 960, 1600], eager = false } = Astro.props;
+---
+{photo ? (
+  <Image
+    class="slot-photo"
+    src={photo}
+    alt={alt}
+    widths={widths.filter((w) => w <= photo.width).concat(widths.some((w) => w > photo.width) ? [photo.width] : [])}
+    sizes={sizes}
+    loading={eager ? 'eager' : 'lazy'}
+    style={`aspect-ratio:${ratio}`}
+  />
+) : (
+  <div class="ph mono" style={`aspect-ratio:${ratio}`} role="img" aria-label={`Photo to come: ${label}`}>[{label}]</div>
+)}
+
+<style>
+  .slot-photo { display: block; width: 100%; height: auto; object-fit: cover; }
+</style>

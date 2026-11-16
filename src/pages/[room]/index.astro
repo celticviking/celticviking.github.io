@@ -1,15 +1,15 @@
 ---
-// TEMPORARY room pages (/house/, /shop/, /lab/, /press/, /about/).
-// Each shows the room's name and its logbook entries until the real page is built
-// (The House and the Library come next, in step 4). Delete a room from this
-// list once it has its own page in src/pages/.
+// TEMPORARY section pages (/shop/, /lab/, /press/, /about/).
+// Each shows the section's name and its logbook entries until the real page is built.
+// Exclude a section here once it has its own pages in src/pages/ (as The House does).
 import Base from '../../layouts/Base.astro';
 import LogCard from '../../components/LogCard.astro';
 import { rooms, type Room } from '../../data/site';
 import { getLog } from '../../lib/log';
 
 export function getStaticPaths() {
-  return rooms.filter((r) => r.open).map((room) => ({ params: { room: room.id }, props: { room } }));
+  // The House has its own pages in src/pages/house/.
+  return rooms.filter((r) => r.open && r.id !== 'house').map((room) => ({ params: { room: room.id }, props: { room } }));
 }
 
 interface Props { room: Room }

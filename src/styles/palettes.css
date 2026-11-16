@@ -1,0 +1,71 @@
+/*
+  Room palettes. A room page sets <html data-palette="library"> (from the room's
+  Markdown file), and these blocks replace the Home colours with the room's own,
+  in light and in dark. Every pair here was checked for readable contrast (WCAG AA).
+
+  --band*  is the coloured banner at the top of a room page.
+  With JavaScript off, room pages stay in their light palette.
+*/
+
+:root {
+  --band: #16130F;
+  --band-text: #F5F2EC;
+  --band-sub: #D9D2C6;
+  --band-label: #C9A35A;
+  --band-rule: #6B6055;
+}
+
+/* ---------- Library & Music Room: cherry, navy, antique brass ---------- */
+:root[data-palette='library'] {
+  --bg: #F3EADB; --ink: #2B1A14; --text: #2B1A14; --text-lead: #3D2A22; --text-soft: #4E3A31;
+  --muted: #6B5146; --accent: #7B2D26; --mark: #2B1A14; --rule: #2B1A14; --rule-soft: #D9C8AA;
+  --ph-bg: #E9DDC8; --ph-border: #CDBB9F; --hatch: rgba(43, 26, 20, 0.08); --chip-border: rgba(43, 26, 20, 0.3);
+  --band: #3B1612; --band-text: #F3EADB; --band-sub: #E6D6BC; --band-label: #B8A06A; --band-rule: #947B47;
+}
+:root[data-palette='library'][data-theme='dark'] {
+  --bg: #170F0C; --ink: #EFE3D0; --text: #EFE3D0; --text-lead: #E0D2BD; --text-soft: #CDBDA6;
+  --muted: #B09A86; --accent: #C9AE74; --mark: #B8A06A; --rule: #4A3229; --rule-soft: #3A2620;
+  --ph-bg: #22160F; --ph-border: #4A3229; --hatch: rgba(239, 227, 208, 0.06); --chip-border: rgba(239, 227, 208, 0.25);
+}
+
+/* ---------- Apothecary Kitchen: Iron Ore, copper, sage ---------- */
+:root[data-palette='kitchen'] {
+  --bg: #F0EEE8; --ink: #232322; --text: #232322; --text-lead: #34332F; --text-soft: #45443F;
+  --muted: #5E5C55; --accent: #83533F; --mark: #232322; --rule: #232322; --rule-soft: #D3D0C6;
+  --ph-bg: #E5E2DA; --ph-border: #C9C5BA; --hatch: rgba(35, 35, 34, 0.08); --chip-border: rgba(35, 35, 34, 0.3);
+  --band: #434341; --band-text: #F0EEE8; --band-sub: #D9D6CC; --band-label: #B9C6A7; --band-rule: #976B5A;
+}
+:root[data-palette='kitchen'][data-theme='dark'] {
+  --bg: #151514; --ink: #ECEAE3; --text: #ECEAE3; --text-lead: #DCD9D0; --text-soft: #C9C6BC;
+  --muted: #A3A096; --accent: #C9937C; --mark: #B9C6A7; --rule: #3C3B38; --rule-soft: #2E2D2B;
+  --ph-bg: #1F1F1D; --ph-border: #3C3B38; --hatch: rgba(236, 234, 227, 0.05); --chip-border: rgba(236, 234, 227, 0.25);
+  --band: #2E2F32;
+}
+
+/* ---------- Workshop: Kendall Charcoal, copper tin ---------- */
+:root[data-palette='workshop'] {
+  --bg: #F2EEE9; --ink: #1F1D1B; --text: #1F1D1B; --text-lead: #332F2B; --text-soft: #45403C;
+  --muted: #5F5852; --accent: #8C5440; --mark: #1F1D1B; --rule: #1F1D1B; --rule-soft: #D6CEC5;
+  --ph-bg: #E7E1DA; --ph-border: #CBC2B8; --hatch: rgba(31, 29, 27, 0.08); --chip-border: rgba(31, 29, 27, 0.3);
+  --band: #373535; --band-text: #F2EEE9; --band-sub: #DDD3C8; --band-label: #DC9772; --band-rule: #A16D55;
+}
+:root[data-palette='workshop'][data-theme='dark'] {
+  --bg: #141312; --ink: #EDE6DE; --text: #EDE6DE; --text-lead: #DDD5CB; --text-soft: #CBC1B6;
+  --muted: #A79D93; --accent: #DC9772; --mark: #DC9772; --rule: #3D3733; --rule-soft: #2E2A27;
+  --ph-bg: #1E1C1A; --ph-border: #3D3733; --hatch: rgba(237, 230, 222, 0.05); --chip-border: rgba(237, 230, 222, 0.25);
+  --band: #2B2929;
+}
+
+/* ---------- Living Room & Office: Backwoods, carpet green, brick ---------- */
+:root[data-palette='living'] {
+  --bg: #F0F0EA; --ink: #1E211D; --text: #1E211D; --text-lead: #30342E; --text-soft: #42463F;
+  --muted: #5A5E55; --accent: #4C5B45; --mark: #1E211D; --rule: #1E211D; --rule-soft: #D1D4C9;
+  --ph-bg: #E4E5DC; --ph-border: #C7CABD; --hatch: rgba(30, 33, 29, 0.08); --chip-border: rgba(30, 33, 29, 0.3);
+  --band: #3E544C; --band-text: #F0F0EA; --band-sub: #D8DCD0; --band-label: #E3D7C6; --band-rule: #877468;
+}
+:root[data-palette='living'][data-theme='dark'] {
+  --bg: #121513; --ink: #E9EBE4; --text: #E9EBE4; --text-lead: #D7DAD1; --text-soft: #C5C9BE;
+  --muted: #9FA597; --accent: #AEBE9E; --mark: #AEBE9E; --rule: #354039; --rule-soft: #28302B;
+  --ph-bg: #1A1F1C; --ph-border: #354039; --hatch: rgba(233, 235, 228, 0.05); --chip-border: rgba(233, 235, 228, 0.25);
+  --band: #2C3D37;
+}

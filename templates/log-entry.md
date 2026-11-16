@@ -16,6 +16,7 @@ The settings are the lines between the two `---` marks at the top of the file. M
 
 - date: the time is optional. Add one (24-hour clock) when you post more than one entry on the same day, so the newest shows first.
 - room: one of house, shop, lab, press, studio, about. It decides which room the entry shows up in.
+- houseRoom: optional, for house entries. Add a line like `houseRoom: library` (the room's file name in src/content/house/, without .md) and the entry also shows on that room's page.
 - cover and coverAlt: optional. Put the photo in the same folder as this file, run it through Myndar first, and delete both lines if there's no photo.
 - poem: true keeps every line break exactly as typed (in MarkText, Shift+Enter for a new line, Enter for a new stanza). Leave it false for ordinary entries.
 - draft: true means you can see it while previewing on your own machine, but it will never be published. Delete the line (or set it to false) when it's ready.
