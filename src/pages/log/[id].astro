@@ -74,6 +74,10 @@ const { Content } = await render(entry);
     line-height: 1.6;
   }
   .poem { font-size: 21px; }
+  /* Text pasted from elsewhere often marks line breaks with two trailing spaces or a
+     backslash, which become <br> tags. The line break is already kept above, so hide
+     them, or every line would be broken twice. */
+  .poem :global(br) { display: none; }
 
   .tags { margin: 48px 0 0; font-size: 11px; }
   .pager {

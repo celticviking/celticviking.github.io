@@ -10,7 +10,8 @@ export async function getLog(room?: RoomId): Promise<LogEntry[]> {
     if (import.meta.env.PROD && data.draft) return false;
     return room ? data.room === room : true;
   });
-  return entries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  // Newest first; entries with the exact same date and time fall back to file name, so the order never jumps around.
+  return entries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.id.localeCompare(b.id));
 }
 
 /** "Nov 2021" style date for cards; dates are stored without a time, so read them as UTC. */
