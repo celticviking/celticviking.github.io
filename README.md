@@ -29,7 +29,7 @@ The three newest entries appear on Home.
 
 - `src/pages/` — one file per page; the file path is the web address.
 - `src/content/log/` — the logbook. One Markdown file per entry; see `src/content.config.ts` for the fields.
-- `src/content/house/` — The House. One Markdown file per room (`library.md` explains every field). Photos go in a folder named after the room, e.g. `src/content/house/library/`. Rooms with `status: planned` appear under "Still to Come" and get a page once they're in progress or finished.
+- `src/content/house/` — The House. One Markdown file per room (`library.md` explains every field). Photos go in a folder named after the room, e.g. `src/content/house/library/`. Rooms with `status: planned` appear under "Still to Come" and get a page once they're in progress or finished. Before and After can each hold several shots, one per angle (arrows, swipe, arrow keys); every photo on a room page opens full-screen when clicked (`src/components/BeforeAfter.astro`, `Lightbox.astro`).
 - `src/data/site.ts` — site name, footer links, and the rooms on the floor plan.
 - `src/styles/global.css` — colour tokens for light and dark mode.
 - `src/styles/palettes.css` — each room's own colours, light and dark.

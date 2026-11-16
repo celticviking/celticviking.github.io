@@ -67,6 +67,9 @@ const house = defineCollection({
       label: z.string().default('Photo'),
       caption: z.string().optional(),
     });
+    // Before and After each take one shot or a list of shots (one per angle).
+    // Always handed to the page as a list; a missing one becomes an empty list.
+    const shots = z.preprocess((v) => (v == null ? [] : Array.isArray(v) ? v : [v]), z.array(slot));
     return z.object({
       title: z.string(),
       order: z.number(),
@@ -78,8 +81,8 @@ const house = defineCollection({
       swatches: z.array(z.object({ name: z.string(), where: z.string(), hex: z.string() })).default([]),
       swatchNote: z.string().optional(),
       wide: slot.optional(),
-      before: slot.optional(),
-      after: slot.optional(),
+      before: shots,
+      after: shots,
       made: z.array(z.object({ piece: z.string(), what: z.string() })).default([]),
       found: z.string().optional(),
       details: z.array(slot).default([]),

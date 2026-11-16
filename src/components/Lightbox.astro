@@ -1,0 +1,155 @@
+---
+// The full-screen photo viewer. Put it once on a page; it opens for any photo
+// that PhotoSlot rendered with `zoom`. Arrows, arrow keys or a swipe step through
+// the photos in the same group; Esc, the X, or a click outside the photo closes it.
+// Always dark, whatever the page's theme, so photos are seen against neutral black.
+---
+<dialog class="lightbox" aria-label="Photo viewer" data-lightbox>
+  <div class="stage" data-stage>
+    <img data-img alt="" />
+  </div>
+  <div class="bar">
+    <p class="cap" data-cap></p>
+    <span class="mono count" data-count></span>
+  </div>
+  <button type="button" class="lb-btn close" data-close aria-label="Close">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+  </button>
+  <button type="button" class="lb-btn prev" data-step="-1" aria-label="Previous photo">
+    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+  </button>
+  <button type="button" class="lb-btn next" data-step="1" aria-label="Next photo">
+    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+  </button>
+</dialog>
+
+<script>
+  const dlg = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  if (dlg && typeof dlg.showModal === 'function') {
+    const img = dlg.querySelector<HTMLImageElement>('[data-img]')!;
+    const cap = dlg.querySelector<HTMLElement>('[data-cap]')!;
+    const count = dlg.querySelector<HTMLElement>('[data-count]')!;
+    const steps = [...dlg.querySelectorAll<HTMLButtonElement>('[data-step]')];
+    let list: HTMLAnchorElement[] = [];
+    let i = 0;
+
+    const show = (n: number) => {
+      i = ((n % list.length) + list.length) % list.length;
+      const a = list[i];
+      // Hide the previous photo until the next one has loaded, so a caption never sits under the wrong picture.
+      if (img.getAttribute('src') !== a.href) {
+        img.classList.add('loading');
+        img.onload = img.onerror = () => img.classList.remove('loading');
+      }
+      img.src = a.href;
+      img.alt = a.dataset.alt ?? '';
+      const text = (a.dataset.caption ?? '').trim();
+      cap.textContent = text;
+      cap.classList.toggle('prompt', /^\[.*\]$/.test(text));
+      count.textContent = list.length > 1 ? `${i + 1} / ${list.length}` : '';
+      steps.forEach((b) => (b.hidden = list.length < 2));
+    };
+
+    document.addEventListener('click', (e) => {
+      const a = (e.target as Element).closest<HTMLAnchorElement>('a[data-zoom]');
+      // Let ctrl/cmd/shift-click open the larger copy in a new tab as usual.
+      if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      list = [...document.querySelectorAll<HTMLAnchorElement>(`a[data-zoom="${a.dataset.zoom}"]`)];
+      show(list.indexOf(a));
+      dlg.showModal();
+    });
+
+    steps.forEach((b) => b.addEventListener('click', () => show(i + Number(b.dataset.step))));
+    dlg.querySelector('[data-close]')!.addEventListener('click', () => dlg.close());
+    dlg.addEventListener('click', (e) => {
+      if (e.target === dlg || (e.target as Element).matches('[data-stage], .bar')) dlg.close();
+    });
+    dlg.addEventListener('keydown', (e) => {
+      if (list.length < 2) return;
+      if (e.key === 'ArrowLeft') { show(i - 1); e.preventDefault(); }
+      if (e.key === 'ArrowRight') { show(i + 1); e.preventDefault(); }
+    });
+
+    let x0: number | null = null;
+    let y0 = 0;
+    dlg.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+    dlg.addEventListener('touchend', (e) => {
+      if (x0 === null || list.length < 2) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      const dy = e.changedTouches[0].clientY - y0;
+      x0 = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) show(i + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+
+    dlg.addEventListener('close', () => {
+      const last = list[i];
+      img.removeAttribute('src');
+      if (!last) return;
+      // Leave the page showing the photo that was last open, and put focus back on it.
+      last.dispatchEvent(new CustomEvent('vcv:viewed', { bubbles: true, detail: last }));
+      last.focus({ preventScroll: true });
+    });
+  }
+</script>
+
+<style>
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(14, 11, 9, 0.96);
+    color: #f5f2ec;
+    overflow: hidden;
+  }
+  .lightbox[open] { display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+  .lightbox::backdrop { background: rgba(14, 11, 9, 0.6); }
+  :global(html:has(dialog.lightbox[open])) { overflow: hidden; }
+
+  .stage { display: flex; align-items: center; justify-content: center; min-height: 0; padding: 64px 88px 8px; }
+  .stage img { display: block; max-width: 100%; max-height: calc(100dvh - 150px); width: auto; height: auto; object-fit: contain; transition: opacity 0.15s; }
+  .stage img.loading { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) { .stage img { transition: none; } }
+  .bar { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; padding: 14px 88px 28px; }
+  .cap { margin: 0; max-width: 70ch; font-size: 17px; color: #e4ddd2; }
+  .cap.prompt { color: #a89f92; font-style: italic; }
+  .count { flex: none; font-size: 12px; color: #a89f92; }
+
+  .lb-btn {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    border: 0;
+    border-radius: 50%;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(245, 242, 236, 0.1);
+    color: #f5f2ec;
+    cursor: pointer;
+    transition: background-color 0.15s;
+  }
+  .lb-btn:hover { background: rgba(245, 242, 236, 0.2); }
+  .lb-btn:focus-visible { outline: 2px solid #f5f2ec; outline-offset: 2px; }
+  .lb-btn[hidden] { display: none; }
+  .close { top: 14px; right: 18px; width: 44px; height: 44px; }
+  .prev, .next { top: 50%; transform: translateY(-50%); }
+  .prev { left: 18px; }
+  .next { right: 18px; }
+
+  @media (max-width: 860px) {
+    .stage { padding: 60px 8px 8px; }
+    .bar { padding: 12px 16px 20px; flex-direction: column; gap: 6px; }
+    .prev, .next { top: auto; bottom: 18px; transform: none; width: 46px; height: 46px; }
+    .prev { left: auto; right: 74px; }
+    .next { right: 16px; }
+    .bar { padding-right: 140px; }
+  }
+</style>

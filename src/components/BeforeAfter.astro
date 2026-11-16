@@ -1,0 +1,149 @@
+---
+// Before & After: two panes side by side, each holding one or more shots.
+// With more than one shot, arrows appear on hover (always on touch screens), and
+// you can swipe or use the arrow keys. When Before and After have the same number
+// of shots, they are treated as matching angles and move together.
+// Without JavaScript, each pane shows its first shot, and clicking it opens the larger copy.
+import type { ImageMetadata } from 'astro';
+import PhotoSlot from './PhotoSlot.astro';
+import { isPrompt } from '../lib/house';
+
+interface Shot { photo?: ImageMetadata; alt?: string; label: string; caption?: string }
+interface Props { before: Shot[]; after: Shot[] }
+const { before, after } = Astro.props;
+const panes = [
+  { name: 'Before', key: 'before', shots: before },
+  { name: 'After', key: 'after', shots: after },
+].filter((p) => p.shots.length > 0);
+const linked = panes.length === 2 && before.length === after.length && before.length > 1;
+---
+<div class="two" data-shots-group data-linked={linked ? '' : undefined}>
+  {panes.map((p) => (
+    <figure class="pane" data-pane>
+      <div class="frame">
+        {p.shots.map((s, i) => (
+          <div class="shot" data-shot hidden={i > 0}>
+            <PhotoSlot photo={s.photo} alt={s.alt} label={s.label} ratio="4 / 3" sizes="(max-width: 860px) 100vw, 572px" zoom={p.key} caption={s.caption} />
+          </div>
+        ))}
+        {p.shots.length > 1 && (
+          <>
+            <button type="button" class="nav prev" data-step="-1" aria-label={linked ? 'Previous angle' : `Previous ${p.key} photo`} hidden>
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+            </button>
+            <button type="button" class="nav next" data-step="1" aria-label={linked ? 'Next angle' : `Next ${p.key} photo`} hidden>
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+            </button>
+          </>
+        )}
+      </div>
+      <figcaption>
+        <span class="mono muted small">
+          {p.name}
+          {p.shots.length > 1 && <span class="count" data-count aria-live="polite" hidden> · <span data-n>1</span> / {p.shots.length}</span>}
+        </span>
+        {p.shots.map((s, i) => (
+          <span class:list={['caption', { prompt: isPrompt(s.caption) }]} data-cap hidden={i > 0 || !s.caption}>{s.caption}</span>
+        ))}
+      </figcaption>
+    </figure>
+  ))}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-shots-group]').forEach((group) => {
+    const panes = [...group.querySelectorAll<HTMLElement>('[data-pane]')];
+    const linked = group.hasAttribute('data-linked');
+    const at = new Map<HTMLElement, number>();
+
+    const show = (pane: HTMLElement, n: number) => {
+      const shots = [...pane.querySelectorAll<HTMLElement>('[data-shot]')];
+      const caps = [...pane.querySelectorAll<HTMLElement>('[data-cap]')];
+      const i = ((n % shots.length) + shots.length) % shots.length;
+      at.set(pane, i);
+      shots.forEach((s, k) => (s.hidden = k !== i));
+      caps.forEach((c, k) => (c.hidden = k !== i || !c.textContent?.trim()));
+      const num = pane.querySelector('[data-n]');
+      if (num) num.textContent = String(i + 1);
+    };
+    const go = (pane: HTMLElement, n: number) => (linked ? panes : [pane]).forEach((p) => show(p, n));
+    const step = (pane: HTMLElement, d: number) => go(pane, (at.get(pane) ?? 0) + d);
+
+    panes.forEach((pane) => {
+      at.set(pane, 0);
+      const shots = [...pane.querySelectorAll<HTMLElement>('[data-shot]')];
+      if (shots.length < 2) return;
+      pane.querySelectorAll<HTMLButtonElement>('.nav').forEach((b) => {
+        b.hidden = false;
+        b.addEventListener('click', () => step(pane, Number(b.dataset.step)));
+      });
+      const count = pane.querySelector<HTMLElement>('[data-count]');
+      if (count) count.hidden = false;
+
+      pane.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') { step(pane, -1); e.preventDefault(); }
+        if (e.key === 'ArrowRight') { step(pane, 1); e.preventDefault(); }
+      });
+
+      // Swipe on touch screens.
+      const frame = pane.querySelector<HTMLElement>('.frame')!;
+      let x0: number | null = null;
+      let y0 = 0;
+      frame.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+      frame.addEventListener('touchend', (e) => {
+        if (x0 === null) return;
+        const dx = e.changedTouches[0].clientX - x0;
+        const dy = e.changedTouches[0].clientY - y0;
+        x0 = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) step(pane, dx < 0 ? 1 : -1);
+      }, { passive: true });
+
+      // After the full-screen viewer closes, show the shot that was last open in it.
+      pane.addEventListener('vcv:viewed', (e) => {
+        const el = (e as CustomEvent<Element>).detail;
+        const k = shots.findIndex((s) => s.contains(el));
+        if (k >= 0) go(pane, k);
+      });
+    });
+  });
+</script>
+
+<style>
+  .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+  .pane { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+  .frame { position: relative; }
+  figcaption { display: flex; flex-direction: column; gap: 4px; }
+  .small { font-size: 11px; }
+  .caption { color: var(--text-soft); }
+  .caption.prompt { color: var(--muted); }
+  [hidden] { display: none !important; }
+
+  .nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(22, 19, 15, 0.6);
+    color: #f5f2ec;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, background-color 0.15s;
+  }
+  .nav.prev { left: 12px; }
+  .nav.next { right: 12px; }
+  .frame:hover .nav, .frame:focus-within .nav { opacity: 1; }
+  .nav:hover { background: rgba(22, 19, 15, 0.85); }
+  .nav:focus-visible { opacity: 1; outline: 2px solid #f5f2ec; outline-offset: 2px; }
+  @media (hover: none) { .nav { opacity: 0.85; } }
+  @media (prefers-reduced-motion: reduce) { .nav { transition: none; } }
+
+  @media (max-width: 860px) {
+    .two { grid-template-columns: 1fr; }
+  }
+</style>

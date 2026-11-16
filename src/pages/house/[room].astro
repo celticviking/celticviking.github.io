@@ -5,6 +5,8 @@ import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import PhotoSlot from '../../components/PhotoSlot.astro';
 import LogCard from '../../components/LogCard.astro';
+import BeforeAfter from '../../components/BeforeAfter.astro';
+import Lightbox from '../../components/Lightbox.astro';
 import { getHouseRooms, hasPage, roomUrl, statusLabel, isPrompt, roomNo, type HouseRoom } from '../../lib/house';
 import { getLog } from '../../lib/log';
 
@@ -25,10 +27,6 @@ await render(room);
 const story = (room.rendered?.html ?? '').replace(/<p>(\[[^<]*\])<\/p>/g, '<p class="prompt">$1</p>');
 const entries = (await getLog('house')).filter((e) => e.data.houseRoom?.id === room.id);
 const pad = (n: number) => String(n).padStart(2, '0');
-const beforeAfter = [
-  { name: 'Before', s: d.before },
-  { name: 'After', s: d.after },
-].flatMap(({ name, s }) => (s ? [{ name, s }] : []));
 ---
 <Base title={d.title} description={isPrompt(d.tagline) ? `${d.title}, a room in a 1908 house.` : d.tagline} palette={d.palette}>
   <section class="band">
@@ -47,24 +45,14 @@ const beforeAfter = [
 
   {d.wide && (
     <section class="wrap block first">
-      <PhotoSlot photo={d.wide.photo} alt={d.wide.alt} label={d.wide.label} ratio="16 / 9" sizes="(max-width: 1240px) 100vw, 1176px" eager />
+      <PhotoSlot photo={d.wide.photo} alt={d.wide.alt} label={d.wide.label} ratio="16 / 9" sizes="(max-width: 1240px) 100vw, 1176px" eager zoom="wide" caption={d.wide.caption} />
     </section>
   )}
 
-  {(d.before || d.after) && (
+  {(d.before.length > 0 || d.after.length > 0) && (
     <section class="wrap block" aria-labelledby="ba-h">
       <h2 id="ba-h">Before &amp; After</h2>
-      <div class="two">
-        {beforeAfter.map(({ name, s }) => (
-          <figure>
-            <PhotoSlot photo={s.photo} alt={s.alt} label={s.label} ratio="4 / 3" sizes="(max-width: 860px) 100vw, 572px" />
-            <figcaption>
-              <span class="mono muted small">{name}</span>
-              {s.caption && <span class:list={['caption', { prompt: isPrompt(s.caption) }]}>{s.caption}</span>}
-            </figcaption>
-          </figure>
-        ))}
-      </div>
+      <BeforeAfter before={d.before} after={d.after} />
     </section>
   )}
 
@@ -108,7 +96,7 @@ const beforeAfter = [
         )}
         {d.found && (
           <>
-            <h3 class="mono">Found, not made</h3>
+            <h3 class="mono">Found, acquired, or inherited</h3>
             <p class:list={['found', { prompt: isPrompt(d.found) }]}>{d.found}</p>
           </>
         )}
@@ -122,7 +110,7 @@ const beforeAfter = [
       <div class="three">
         {d.details.map((s) => (
           <figure>
-            <PhotoSlot photo={s.photo} alt={s.alt} label={s.label} ratio="1 / 1" sizes="(max-width: 860px) 100vw, 376px" />
+            <PhotoSlot photo={s.photo} alt={s.alt} label={s.label} ratio="1 / 1" sizes="(max-width: 860px) 100vw, 376px" zoom="details" caption={s.caption} />
             {s.caption && <figcaption class:list={['caption', { prompt: isPrompt(s.caption) }]}>{s.caption}</figcaption>}
           </figure>
         ))}
@@ -151,6 +139,8 @@ const beforeAfter = [
       )}
     </div>
   </nav>
+
+  <Lightbox />
 </Base>
 
 <style>
@@ -189,7 +179,6 @@ const beforeAfter = [
   figcaption { display: flex; flex-direction: column; gap: 4px; }
   .caption { color: var(--text-soft); }
 
-  .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
   .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
 
   /* Swatches split into even rows: up to 6 in one row, more than 6 in two balanced rows. */
@@ -220,7 +209,7 @@ const beforeAfter = [
     .band-inner { padding-top: 56px; padding-bottom: 64px; }
     .tagline { font-size: 24px; margin-bottom: 36px; }
     .block { padding-top: 72px; }
-    .two, .three { grid-template-columns: 1fr; }
+    .three { grid-template-columns: 1fr; }
     .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .swatch { height: 96px; }
     .pager a.right { align-items: flex-start; text-align: left; }
