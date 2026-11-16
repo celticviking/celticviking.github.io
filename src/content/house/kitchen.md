@@ -25,7 +25,7 @@ after:
   label: "Photo · after, same angle"
   caption: "[The one change that made the biggest difference.]"
 
-swatchNote: "Paint codes, plus colours sampled from the room"
+swatchNote: "Paint and flooring from the makers; the rest sampled in the room"
 swatches:
   - { name: Iron Ore, where: "Walls · Sherwin-Williams SW 7069", hex: "#434341" }
   - { name: Cabinet black, where: "Cabinets", hex: "#2E2F32" }
@@ -35,7 +35,7 @@ swatches:
   - { name: Countertop wood, where: "Countertops", hex: "#7E6E5B" }
   - { name: Shelving wood, where: "Open shelves", hex: "#6D6359" }
   - { name: Sage, where: "The stand mixer", hex: "#8E9C7C" }
-  - { name: Floor, where: "Floor", hex: "#97897A" }
+  - { name: Elkhorn, where: "Floor · LX Hausys Hflor", hex: "#A49785" }
 
 made:
   - { piece: "[Piece]", what: "[what you did to it]" }

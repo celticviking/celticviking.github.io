@@ -32,14 +32,16 @@ after:
   # photo: ./library/after.jpg
   # alt: ""
 
-swatchNote: "Sampled from the room itself"
+swatchNote: "Flooring from the maker; the rest sampled in the room"
 swatches:
   - { name: Cherry, where: "Walls & shelves", hex: "#612521" }
   - { name: Deep cherry, where: "The piano", hex: "#4F1713" }
   - { name: Navy, where: "Curtains", hex: "#2D3A55" }
-  - { name: Slate blue, where: "Leather chairs & rug", hex: "#414A5A" }
-  - { name: Brown leather, where: "Tufted chairs", hex: "#402F27" }
+  - { name: Slate blue, where: "Persian rug", hex: "#414A5A" }
+  - { name: Midnight leather, where: "Tufted Chesterfield chairs", hex: "#1F2834" }
+  - { name: Brown leather, where: "Victorian chairs", hex: "#402F27" }
   - { name: Antique brass, where: "Clock & Victrola horn", hex: "#947B47" }
+  - { name: North Ridge, where: "Floor · LX Hausys Hflor", hex: "#6D4D36" }
 
 made:                         # "Made or restored by hand"
   - { piece: "[Piece]", what: "[what you did to it]" }

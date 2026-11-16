@@ -24,7 +24,7 @@ after:
   label: "Photo · after, same angle"
   caption: "[The one change that made the biggest difference.]"
 
-swatchNote: "Paint codes, plus colours sampled from the room"
+swatchNote: "Paint and flooring from the makers; the rest sampled in the room"
 swatches:
   - { name: Backwoods, where: "Walls & ceiling · Benjamin Moore CC-630", hex: "#586251" }
   - { name: Iron Ore, where: "One wall · Sherwin-Williams SW 7069", hex: "#434341" }
@@ -33,7 +33,8 @@ swatches:
   - { name: Grey brick, where: "Brick", hex: "#6E655C" }
   - { name: Woodwork, where: "Trim & woodwork", hex: "#82756B" }
   - { name: Black, where: "Shelves & cabinets", hex: "#302F31" }
-  - { name: Desk wood, where: "The desk", hex: "#706257" }
+  - { name: Desk wood, where: "The desk (and the workshop bench)", hex: "#706257" }
+  - { name: Elkhorn, where: "Floor · LX Hausys Hflor", hex: "#A49785" }
 
 made:
   - { piece: "[Piece]", what: "[what you did to it]" }
