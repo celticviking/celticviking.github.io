@@ -5,20 +5,22 @@ import PhotoSlot from '../../components/PhotoSlot.astro';
 import LogCard from '../../components/LogCard.astro';
 import { getHouseRooms, hasPage, roomUrl, statusLabel, isPrompt, roomNo } from '../../lib/house';
 import { getLog } from '../../lib/log';
+import { pageText } from '../../lib/pages';
 
 const rooms = await getHouseRooms();
 const built = rooms.filter(hasPage);
 const planned = rooms.filter((r) => !hasPage(r));
 const done = rooms.filter((r) => r.data.status === 'finished').length;
 const entries = (await getLog('house')).slice(0, 3);
+// The words at the top: src/content/pages/house.md
+const { data: page, html: intro } = await pageText('house');
 ---
-<Base title="The House" description="A house built in 1908, renovated one room at a time, each room with its own theme.">
+<Base title={page.title} description={page.description}>
   <div class="wrap page">
     <header class="page-head">
       <p class="mono muted">{done} rooms done · {rooms.length - done} to go</p>
-      <h1>The House</h1>
-      <p class="lead">A house built in 1908, renovated one room at a time. Every room has its own theme, and I designed all of them except the kitchen’s original layout.</p>
-      <p class="lead prompt">[Why give every room its own theme? A sentence or two in your words.]</p>
+      <h1>{page.title}</h1>
+      <div class="lead-text" set:html={intro} />
     </header>
 
     <ul class="rooms">
@@ -69,8 +71,8 @@ const entries = (await getLog('house')).slice(0, 3);
   .page-head { max-width: 720px; margin-bottom: 72px; }
   .page-head .mono { margin: 0 0 18px; }
   h1 { margin: 0 0 24px; font-family: var(--font-sc); font-weight: 600; font-size: clamp(44px, 6vw, 72px); line-height: 1.02; }
-  .lead { margin: 0 0 16px; font-size: 21px; color: var(--text-lead); }
-  .lead.prompt { color: var(--muted); }
+  .lead-text :global(p) { margin: 0 0 16px; font-size: 21px; color: var(--text-lead); }
+  .lead-text :global(p.prompt) { color: var(--muted); }
 
   .rooms { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px 40px; }
   .room-link { display: flex; flex-direction: column; gap: 12px; height: 100%; text-decoration: none; color: var(--text); }

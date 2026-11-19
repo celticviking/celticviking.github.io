@@ -47,11 +47,11 @@ export const rooms: Room[] = [
   {
     id: 'lab', no: '03', name: 'The Lab', menu: 'The Lab',
     blurb: 'Open-source apps, cyberdecks, 3D prints, and games still in progress.',
-    chips: ['#0A0E0A', '#9FE86B', '#FFB84A', '#3F5A3F'],
+    chips: ['#0B0A08', '#FFB84A', '#9FE86B', '#5A4A2F'],
     open: true, cta: 'Enter →',
   },
   {
-    id: 'press', no: '04', name: 'VCV Press', menu: 'Press',
+    id: 'press', no: '04', name: 'VCV Press', menu: 'VCV Press',
     blurb: 'Books by Drew Walker, both published and in progress. Some poetry, as well.',
     chips: ['#EDE7DB', '#16202B', '#7A1F1F', '#4D5A66'],
     open: true, cta: 'Enter →',

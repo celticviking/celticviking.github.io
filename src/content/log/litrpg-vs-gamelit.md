@@ -5,6 +5,8 @@ room: press
 tags: [books, writing, litrpg, gamelit]
 ---
 
+### *[Archived from 2021]*
+
 ### A New Genre is Born
 
 Role Playing Games have long been a staple in gaming. While Dungeons & Dragons may have brought people together around a table and introduced the importance of the story over the board - and a few role-playing computer games were coded in the mid-1970s - it was the Ultima and Wizardry series of games in the early-1980s that brought the term to a broader audience.
@@ -85,8 +87,6 @@ Community of Authors and Readers posting stories, many of which are LitRPG and G
 [Level Up - How to write LitRPG](https://www.levelup.pub/how-to-write-litrpg)  
 LitRPG Publisher with an intro of thoughts on writing specifically for this genre
 
-
-
 **LitRPG Authors**
 
 [Vasily Mahanenko](http://mahanenko.ru/en/)  
@@ -98,8 +98,6 @@ Author of the Ascend Online series.
 [D. Rus](https://www.goodreads.com/author/show/481586.D_Rus)  
 Author of the Play to Live series.
 
-
-
 **GameLit Authors**
 
 [Blaise Corvin](https://blaise-corvin.com/)  
@@ -107,4 +105,3 @@ Author of the Delvers LLC series.
 
 [Ernest Cline](https://www.ernestcline.com/)  
 Author of Ready Player One, which was made into a movie in 2018.
-

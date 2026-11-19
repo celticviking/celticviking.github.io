@@ -5,6 +5,8 @@ room: press
 tags: [books, writing, editing]
 ---
 
+### *[Archived from 2021]*
+
 ### 10% Writing, 90% Editing
 
 It's easy to get caught up in the dream of writing, envisioning oneself in a montage furiously typing away into the night before slapping the keyboard with a flourish and leaning back to stare at a finished manuscript.

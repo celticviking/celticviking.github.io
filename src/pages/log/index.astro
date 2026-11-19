@@ -3,16 +3,19 @@
 import Base from '../../layouts/Base.astro';
 import LogCard from '../../components/LogCard.astro';
 import { getLog } from '../../lib/log';
+import { pageText } from '../../lib/pages';
 
 const entries = await getLog();
+// The words at the top: src/content/pages/log.md
+const { data: page, html: intro } = await pageText('log');
 const years = [...new Set(entries.map((e) => e.data.date.getUTCFullYear()))];
 ---
-<Base title="Logbook" description="Dated notes from every room of the house, posted when there’s something to show.">
+<Base title="Logbook" description={page.description}>
   <div class="wrap page">
     <header class="page-head">
-      <p class="mono muted">The Logbook</p>
-      <h1>Notes from every room</h1>
-      <p class="lead">Short dated entries, posted when there’s something to show. No schedule.</p>
+      {page.kicker && <p class="mono muted">{page.kicker}</p>}
+      <h1>{page.title}</h1>
+      <div class="lead-text" set:html={intro} />
     </header>
     {years.map((year) => (
       <section class="year" aria-labelledby={`y${year}`}>
@@ -30,7 +33,9 @@ const years = [...new Set(entries.map((e) => e.data.date.getUTCFullYear()))];
   .page-head { max-width: 680px; margin-bottom: 64px; }
   .page-head .mono { margin: 0 0 18px; }
   h1 { margin: 0 0 20px; font-family: var(--font-display); font-weight: 600; font-size: clamp(40px, 5vw, 60px); line-height: 1.05; }
-  .lead { margin: 0; font-size: 21px; color: var(--text-lead); }
+  .lead-text :global(p) { margin: 0 0 14px; font-size: 21px; color: var(--text-lead); }
+  .lead-text :global(p:last-child) { margin-bottom: 0; }
+  .lead-text :global(p.prompt) { color: var(--muted); }
   .year { border-top: 1px solid var(--rule); padding-top: 20px; margin-bottom: 64px; }
   .year h2 { margin: 0 0 28px; font-size: 12px; font-weight: 400; }
   .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 40px; }

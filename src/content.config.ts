@@ -103,7 +103,7 @@ const labCategories = defineCollection({
     order: z.number(),
     status: z.enum(['open', 'planned']).default('open'),
     tagline: z.string().optional(),
-    accent: z.string().default('#9FE86B'),     // the category's colour: card bar and terminal label
+    accent: z.string().default('#FFB84A'),     // the category's colour: card bar and terminal label
   }),
 });
 

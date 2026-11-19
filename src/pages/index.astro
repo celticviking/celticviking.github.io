@@ -6,8 +6,11 @@ import FloorPlan from '../components/FloorPlan.astro';
 import LogCard from '../components/LogCard.astro';
 import { site } from '../data/site';
 import { getLog } from '../lib/log';
+import { pageText } from '../lib/pages';
 
 const latest = (await getLog()).slice(0, 3);
+// The words at the top: src/content/pages/home.md
+const { data: home, html: homeIntro } = await pageText('home');
 ---
 <Base>
   <section class="wrap hero">
@@ -20,10 +23,9 @@ const latest = (await getLog()).slice(0, 3);
       </figcaption>
     </figure>
     <div class="intro">
-      <p class="mono muted kicker">Writer · pianist · tinkerer · smith · woodworker</p>
-      <h1>A vagabond who finally put down roots.</h1>
-      <p class="lead">I’ve traveled the world, worked many jobs, and lived in a variety of locations, but never set down roots until recently. I was a weekend craftsman with no forge or shop of my own. Now I’m renovating a house built in 1908, am building out a forge and shop of my own, have a workbench, and a room for every world I wandered through on the way here.</p>
-      <p class="lead">This is where I keep my interests, musings, and projects. Have a look.</p>
+      {home.kicker && <p class="mono muted kicker">{home.kicker}</p>}
+      <h1>{home.title}</h1>
+      <div class="lead-text" set:html={homeIntro} />
       <p class="signature">— {site.signature}</p>
     </div>
   </section>
@@ -78,8 +80,9 @@ const latest = (await getLog()).slice(0, 3);
     line-height: 1.02;
     letter-spacing: -0.005em;
   }
-  .lead { margin: 0 0 18px; font-size: 21px; color: var(--text-lead); }
-  .lead:last-of-type { margin-bottom: 34px; }
+  .lead-text :global(p) { margin: 0 0 18px; font-size: 21px; color: var(--text-lead); }
+  .lead-text :global(p:last-child) { margin-bottom: 34px; }
+  .lead-text :global(p.prompt) { color: var(--muted); }
   .signature { margin: 0; font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 30px; color: var(--accent); }
 
   .rooms { padding-bottom: 112px; }

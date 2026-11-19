@@ -1,13 +1,16 @@
 ---
 import HandMark from './HandMark.astro';
 import { site, elsewhere } from '../data/site';
+import { pageText } from '../lib/pages';
+// The line next to the mark: src/content/pages/footer.md
+const { html: line } = await pageText('footer');
 const year = new Date().getFullYear();
 ---
 <footer class="site-footer">
   <div class="wrap foot">
     <div class="colophon">
       <HandMark width={40} />
-      <p>Every page here carries the same mark I put on my work: drawn by hand first, then adapted for steel, wood, and screens.</p>
+      <div class="line" set:html={line} />
     </div>
     <div class="meta">
       <nav class="mono links" aria-label="Elsewhere">
@@ -31,7 +34,7 @@ const year = new Date().getFullYear();
     gap: 32px 56px;
   }
   .colophon { display: flex; align-items: center; gap: 24px; flex: 1 1 420px; max-width: 620px; }
-  .colophon p { margin: 0; font-size: 17px; color: var(--text-soft); }
+  .line :global(p) { margin: 0; font-size: 17px; color: var(--text-soft); }
   .meta { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
   .links { display: flex; flex-wrap: wrap; gap: 4px 24px; }
   .links a, .links span { text-decoration: none; padding: 10px 0; }

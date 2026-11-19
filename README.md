@@ -27,9 +27,14 @@ The three newest entries appear on Home.
 
 ## Where things are
 
+**`WHERE-TO-EDIT.md` lists every piece of text on the site and the file it lives in.**
+
+
 - `src/pages/` — one file per page; the file path is the web address.
 - `src/content/log/` — the logbook. One Markdown file per entry; see `src/content.config.ts` for the fields.
 - `src/content/house/` — The House. One Markdown file per room (`library.md` explains every field). Photos go in a folder named after the room, e.g. `src/content/house/library/`. Rooms with `status: planned` appear under "Still to Come" and get a page once they're in progress or finished. Before and After can each hold several shots, one per angle (arrows, swipe, arrow keys); every photo on a room page opens full-screen when clicked (`src/components/BeforeAfter.astro`, `Lightbox.astro`).
+- `src/content/lab/` — The Lab. One `.md` per category (`apps.md` …) and one per project in that category's folder (`apps/sectortray.md`), with photos in a folder named after the project.
+- `src/content/pages/` — the words at the top of Home, The House, The Lab and the Logbook, and the footer line.
 - `src/data/site.ts` — site name, footer links, and the rooms on the floor plan.
 - `src/styles/global.css` — colour tokens for light and dark mode.
 - `src/styles/palettes.css` — each room's own colours, light and dark.

@@ -4,6 +4,6 @@
 title: "The Home Gym"
 order: 5
 status: planned
-statusText: "Planned · next up"
-tagline: "Cyberpunk. [One line about the plan.]"
+statusText: "Planned · next up · designing"
+tagline: "Cyberpunk. High tech, low life, aesthetic vibes. I'm building a smart mirror and my own tech to inhabit it."
 ---

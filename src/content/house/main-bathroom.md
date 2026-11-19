@@ -3,5 +3,6 @@
 title: "The Main Bathroom"
 order: 6
 status: planned
-tagline: "[One line about the plan.]"
+statusText: "planned · designing"
+tagline: "Combining an unusable half-bath into the shower of the main bath, raising the ceiling, still determining the room's aesthetic..."
 ---
