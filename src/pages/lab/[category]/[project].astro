@@ -1,0 +1,158 @@
+---
+// One Lab project (/lab/apps/sectortray/), built from src/content/lab/<category>/<project>.md.
+// Only projects with `page: true` get a page; the rest appear as cards on their category page.
+import Base from '../../../layouts/Base.astro';
+import PhotoSlot from '../../../components/PhotoSlot.astro';
+import LogCard from '../../../components/LogCard.astro';
+import Lightbox from '../../../components/Lightbox.astro';
+import {
+  getLabCategories, getLabProjects, categoryOf, slugOf, projectUrl, categoryUrl, statusText, byShelf,
+  isoDay, type LabProject, type LabCategory,
+} from '../../../lib/lab';
+import { getLog } from '../../../lib/log';
+import { bodyHtml } from '../../../lib/pages';
+import { isPrompt } from '../../../lib/house';
+
+type P = LabProject & { lastUpdated?: Date };
+export async function getStaticPaths() {
+  const [cats, projects] = await Promise.all([getLabCategories(), getLabProjects()]);
+  return cats.flatMap((cat) => {
+    const withPages = projects.filter((p) => categoryOf(p) === cat.id && p.data.page).sort(byShelf);
+    return withPages.map((p, i) => ({
+      params: { category: cat.id, project: slugOf(p) },
+      props: { p, cat, prev: withPages[i - 1], next: withPages[i + 1] },
+    }));
+  });
+}
+
+interface Props { p: P; cat: LabCategory; prev?: P; next?: P }
+const { p, cat, prev, next } = Astro.props;
+const d = p.data;
+const story = await bodyHtml(p);
+const entries = (await getLog('lab')).filter((e) => e.data.labProject?.id === p.id);
+const facts = [
+  { label: 'Status', value: statusText(p) },
+  ...(d.platform ? [{ label: 'Platform', value: d.platform }] : []),
+  ...d.facts,
+  ...(p.lastUpdated ? [{ label: 'Updated', value: isoDay(p.lastUpdated) }] : []),
+];
+---
+<Base title={`${d.title} · The Lab`} description={isPrompt(d.tagline) ? undefined : d.tagline} palette="lab">
+  <section class="band">
+    <div class="wrap band-inner">
+      <p class="mono crumb">
+        <a href="/lab/">The Lab</a> / <a href={categoryUrl(cat)} style={`color:${cat.data.accent}`}>{cat.data.title}</a>
+      </p>
+      <h1>{d.title}</h1>
+      {d.tagline && <p class:list={['tagline', { 'is-prompt': isPrompt(d.tagline) }]}>{d.tagline}</p>}
+      <dl class="facts">
+        {facts.map((f) => <div><dt class="mono">{f.label}</dt><dd class:list={{ 'is-prompt': isPrompt(f.value) }}>{f.value}</dd></div>)}
+      </dl>
+      {d.links.length > 0 && (
+        <p class="links">{d.links.map((l, i) => <a class:list={['btn', 'mono', { primary: i === 0 }]} href={l.url} rel="noopener">{l.label} ↗</a>)}</p>
+      )}
+      {d.tags.length > 0 && <p class="tags">{d.tags.map((t) => <span class="tag mono">{t}</span>)}</p>}
+    </div>
+  </section>
+
+  {d.cover && (
+    <section class="wrap block first">
+      <PhotoSlot photo={d.cover.photo} alt={d.cover.alt} label={d.cover.label} ratio="16 / 9" sizes="(max-width: 1240px) 100vw, 1176px" eager zoom="cover" caption={d.cover.caption} />
+    </section>
+  )}
+
+  <section class="wrap block">
+    <h2>About This Project</h2>
+    <div class="prose" set:html={story} />
+  </section>
+
+  {d.gallery.length > 0 && (
+    <section class="wrap block" aria-labelledby="gal-h">
+      <h2 id="gal-h">{['cyberdecks', 'prints'].includes(cat.id) ? 'Photos' : 'Screenshots'}</h2>
+      <div class="three">
+        {d.gallery.map((s) => (
+          <figure>
+            <PhotoSlot photo={s.photo} alt={s.alt} label={s.label} ratio="3 / 2" sizes="(max-width: 860px) 100vw, 376px" zoom="gallery" caption={s.caption} />
+            {s.caption && <figcaption class:list={['caption', { prompt: isPrompt(s.caption) }]}>{s.caption}</figcaption>}
+          </figure>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {entries.length > 0 && (
+    <section class="wrap block" aria-labelledby="log-h">
+      <h2 id="log-h">From the Logbook</h2>
+      <div class="three">{entries.map((e) => <LogCard entry={e} />)}</div>
+    </section>
+  )}
+
+  <nav class="wrap pager-wrap" aria-label={`More ${cat.data.title.toLowerCase()}`}>
+    <div class="pager">
+      {prev ? (
+        <a href={projectUrl(prev)}><span class="mono muted small">←</span><span class="name">{prev.data.title}</span></a>
+      ) : (
+        <a href={categoryUrl(cat)}><span class="mono muted small">←</span><span class="name">All {cat.data.title.toLowerCase()}</span></a>
+      )}
+      {next ? (
+        <a class="right" href={projectUrl(next)}><span class="mono muted small">→</span><span class="name">{next.data.title}</span></a>
+      ) : (
+        <a class="right" href="/lab/"><span class="mono muted small">→</span><span class="name">The Lab</span></a>
+      )}
+    </div>
+  </nav>
+
+  <Lightbox />
+</Base>
+
+<style>
+  .band { background: var(--band); color: var(--band-text); }
+  .band-inner { padding-top: 72px; padding-bottom: 72px; }
+  .crumb { margin: 0 0 24px; color: var(--band-label); }
+  .crumb a { color: var(--band-label); }
+  .crumb a:hover { color: var(--band-text); }
+  h1 { margin: 0 0 18px; font-family: var(--font-display); font-weight: 600; font-size: clamp(44px, 6.4vw, 84px); line-height: 1; max-width: 16ch; }
+  .tagline { margin: 0 0 40px; max-width: 800px; font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 26px; color: var(--band-sub); }
+  .is-prompt { opacity: 0.8; font-style: italic; }
+  .facts { margin: 0; display: flex; flex-wrap: wrap; gap: 18px 48px; border-top: 1px solid var(--band-rule); padding-top: 22px; }
+  .facts dt { color: var(--band-label); font-size: 11px; }
+  .facts dd { margin: 6px 0 0; font-size: 19px; }
+  .links { margin: 32px 0 0; display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { font-size: 11px; padding: 11px 16px; border: 1px solid var(--band-label); color: var(--band-text); text-decoration: none; }
+  .btn.primary { background: var(--band-label); color: var(--band); }
+  .btn:hover { border-color: var(--band-text); }
+  .btn.primary:hover { background: var(--band-text); }
+  .tags { margin: 24px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 10px; letter-spacing: 0.08em; text-transform: none; padding: 3px 8px; border: 1px solid var(--band-rule); color: var(--band-sub); }
+
+  .block { padding-top: 88px; }
+  .block.first { padding-top: 56px; }
+  .block h2 { margin: 0 0 28px; font-family: var(--font-sc); font-weight: 600; font-size: 40px; letter-spacing: 0.04em; line-height: 1.1; }
+  .prose { max-width: 700px; }
+  .prose :global(p) { margin: 0 0 18px; color: var(--text-lead); }
+  .prose :global(p.prompt) { color: var(--muted); }
+  .prose :global(h2), .prose :global(h3), .prose :global(h4), .prose :global(h5), .prose :global(h6) {
+    margin: 36px 0 12px; font-family: var(--font-sc); font-weight: 600; font-size: 26px; line-height: 1.2;
+  }
+  .prose :global(ul), .prose :global(ol) { margin: 0 0 18px; padding-left: 1.3em; color: var(--text-lead); }
+  .prose :global(li) { margin-bottom: 6px; }
+  figure { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  .caption { color: var(--text-soft); font-size: 16px; }
+  .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 24px; }
+  .small { font-size: 11px; }
+
+  .pager-wrap { padding-top: 104px; padding-bottom: 96px; }
+  .pager { display: flex; flex-wrap: wrap; border-top: 2px solid var(--rule); border-bottom: 2px solid var(--rule); }
+  .pager a { flex: 1 1 320px; padding: 28px 0; text-decoration: none; display: flex; flex-direction: column; gap: 6px; }
+  .pager a.right { align-items: flex-end; text-align: right; }
+  .pager .name { font-family: var(--font-sc); font-weight: 600; font-size: 28px; line-height: 1.15; }
+  .pager a:hover .name { color: var(--accent); }
+
+  @media (max-width: 860px) {
+    .band-inner { padding-top: 52px; padding-bottom: 56px; }
+    .tagline { font-size: 22px; }
+    .block { padding-top: 64px; }
+    .three { grid-template-columns: 1fr; }
+    .pager a.right { align-items: flex-start; text-align: left; }
+  }
+</style>

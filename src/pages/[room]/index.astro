@@ -8,8 +8,8 @@ import { rooms, type Room } from '../../data/site';
 import { getLog } from '../../lib/log';
 
 export function getStaticPaths() {
-  // The House has its own pages in src/pages/house/.
-  return rooms.filter((r) => r.open && r.id !== 'house').map((room) => ({ params: { room: room.id }, props: { room } }));
+  // The House and the Lab have their own pages in src/pages/house/ and src/pages/lab/.
+  return rooms.filter((r) => r.open && r.id !== 'house' && r.id !== 'lab').map((room) => ({ params: { room: room.id }, props: { room } }));
 }
 
 interface Props { room: Room }

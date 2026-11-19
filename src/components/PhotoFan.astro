@@ -1,0 +1,63 @@
+---
+// A category's picture on /lab/. One photo fills the frame; two or three are
+// fanned out like polaroids held in a hand, the newest in front; none shows a
+// hatched placeholder. Hovering the card (the parent link) spreads the fan a little.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Pic { photo: ImageMetadata; alt?: string }
+interface Props { photos: Pic[]; label: string; ratio?: string }
+const { photos, label, ratio = '3 / 2' } = Astro.props;
+const pics = photos.slice(0, 3);
+// Position of each polaroid, newest first: sideways shift (in polaroid widths), lift, and tilt.
+const spots = pics.length === 3
+  ? [{ x: 0, y: -2, r: 2 }, { x: -60, y: 4, r: -9 }, { x: 60, y: 5, r: 10 }]
+  : [{ x: 32, y: 2, r: 6 }, { x: -32, y: -1, r: -6 }];
+const fanned = pics.map((p, i) => ({ ...p, ...spots[i] })).reverse(); // oldest drawn first, newest on top
+---
+{pics.length === 0 ? (
+  <div class="ph mono" style={`aspect-ratio:${ratio}`} role="img" aria-label={`Photo to come: ${label}`}>[{label}]</div>
+) : pics.length === 1 ? (
+  <Image class="single" src={pics[0].photo} alt="" widths={[480, 960]} sizes="(max-width: 860px) 100vw, 580px" style={`aspect-ratio:${ratio}`} />
+) : (
+  <div class="fan" style={`aspect-ratio:${ratio}`} aria-hidden="true">
+    {fanned.map((p) => (
+      <span class="pol" style={`--x:${p.x}%;--y:${p.y}%;--r:${p.r}deg`}>
+        <Image src={p.photo} alt="" widths={[320, 640]} sizes="260px" />
+      </span>
+    ))}
+  </div>
+)}
+
+<style>
+  .single { display: block; width: 100%; height: auto; object-fit: cover; }
+  .fan {
+    position: relative;
+    overflow: hidden;
+    background: var(--ph-bg);
+    background-image: repeating-linear-gradient(135deg, var(--hatch) 0 1px, transparent 1px 7px);
+    --s: 1;
+  }
+  .pol {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 40%;
+    aspect-ratio: 0.86;
+    background: #f5f2ec;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18), 0 10px 22px rgba(0, 0, 0, 0.22);
+    transform: translate(-50%, -50%) translate(calc(var(--x) * var(--s)), var(--y)) rotate(calc(var(--r) * var(--s)));
+    transition: transform 0.25s ease;
+  }
+  .pol :global(img) {
+    position: absolute;
+    left: 6%;
+    top: 5.2%;
+    width: 88%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+  :global(a:hover) > .fan, :global(a:focus-visible) > .fan { --s: 1.3; }
+  @media (prefers-reduced-motion: reduce) { .pol { transition: none; } }
+</style>

@@ -1,0 +1,153 @@
+---
+// One Lab category (/lab/apps/ and so on): a terminal of its latest updates, then
+// every project as a card, with filters by status. Words: src/content/lab/<category>.md.
+import Base from '../../../layouts/Base.astro';
+import PhotoSlot from '../../../components/PhotoSlot.astro';
+import LabTerminal from '../../../components/LabTerminal.astro';
+import {
+  getLabCategories, getLabProjects, categoryOf, projectUrl, statusText, statusGroup, statusLabel,
+  byRecent, byShelf, type LabCategory, type LabStatus,
+} from '../../../lib/lab';
+import { bodyHtml } from '../../../lib/pages';
+import { isPrompt } from '../../../lib/house';
+
+export async function getStaticPaths() {
+  const cats = await getLabCategories();
+  return cats.filter((c) => c.data.status === 'open').map((c) => ({ params: { category: c.id }, props: { cat: c } }));
+}
+
+interface Props { cat: LabCategory }
+const { cat } = Astro.props;
+const d = cat.data;
+const intro = await bodyHtml(cat);
+const all = (await getLabProjects()).filter((p) => categoryOf(p) === cat.id);
+const recent = [...all].sort(byRecent);
+const shelf = [...all].sort(byShelf);
+const catInfo = { [cat.id]: { title: d.title, accent: d.accent } };
+
+// Filter buttons: one per status group that has projects; none if only one group is present.
+const doneStatuses = new Set(all.filter((p) => statusGroup(p.data.status) === 'done').map((p) => p.data.status));
+const doneLabel = doneStatuses.size === 1 ? statusLabel([...doneStatuses][0] as LabStatus) : 'Done';
+const groups = [
+  { key: 'done', label: doneLabel },
+  { key: 'active', label: 'In progress' },
+  { key: 'planned', label: 'Planned' },
+].map((g) => ({ ...g, n: all.filter((p) => statusGroup(p.data.status) === g.key).length })).filter((g) => g.n > 0);
+---
+<Base title={`${d.title} · The Lab`} description={isPrompt(d.tagline) ? undefined : d.tagline} palette="lab">
+  <section class="band">
+    <div class="wrap band-inner">
+      <p class="mono crumb"><a href="/lab/">The Lab</a> / <span style={`color:${d.accent}`}>{cat.id}</span></p>
+      <h1>{d.title}</h1>
+      {d.tagline && <p class:list={['tagline', { 'is-prompt': isPrompt(d.tagline) }]}>{d.tagline}</p>}
+      <LabTerminal projects={recent} categories={catInfo} path={`~/lab/${cat.id}`} showCategory={false} />
+    </div>
+  </section>
+
+  <div class="wrap page">
+    {intro && <div class="intro" set:html={intro} />}
+
+    {groups.length > 1 && (
+      <div class="filters mono" role="group" aria-label="Show projects by status" data-filters hidden>
+        <button type="button" data-filter="all" aria-pressed="true">All <span>{all.length}</span></button>
+        {groups.map((g) => <button type="button" data-filter={g.key} aria-pressed="false">{g.label} <span>{g.n}</span></button>)}
+      </div>
+    )}
+
+    <ul class="projects" data-projects>
+      {shelf.map((p) => {
+        const c = p.data.cover;
+        const inner = (
+          <>
+            <PhotoSlot photo={c?.photo} alt={c?.alt} label={c?.label ?? 'Photo'} ratio="3 / 2" sizes="(max-width: 860px) 100vw, 380px" />
+            <span class="name">{p.data.title}</span>
+            {p.data.tagline && <span class:list={['tagline-sm', { prompt: isPrompt(p.data.tagline) }]}>{p.data.tagline}</span>}
+            <span class="meta">
+              <span class:list={['mono', 'status', `s-${statusGroup(p.data.status)}`]}>{statusText(p)}</span>
+              {p.data.platform && <span class="mono muted plat">{p.data.platform}</span>}
+            </span>
+            {p.data.tags.length > 0 && <span class="tags">{p.data.tags.map((t) => <span class="tag mono">{t}</span>)}</span>}
+            {p.data.page && <span class="mono go">Open →</span>}
+          </>
+        );
+        return (
+          <li data-group={statusGroup(p.data.status)}>
+            {p.data.page ? <a class="proj" href={projectUrl(p)}>{inner}</a> : <div class="proj">{inner}</div>}
+          </li>
+        );
+      })}
+    </ul>
+    {all.length === 0 && <p class="muted">Nothing here yet.</p>}
+  </div>
+</Base>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-filters]');
+  const items = [...document.querySelectorAll<HTMLElement>('[data-projects] > li')];
+  if (bar) {
+    bar.hidden = false;
+    const buttons = [...bar.querySelectorAll<HTMLButtonElement>('button')];
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => {
+        const f = b.dataset.filter;
+        buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        items.forEach((li) => (li.hidden = f !== 'all' && li.dataset.group !== f));
+      }),
+    );
+  }
+</script>
+
+<style>
+  .band { background: var(--band); color: var(--band-text); }
+  .band-inner { padding-top: 64px; padding-bottom: 64px; }
+  .crumb { margin: 0 0 22px; color: var(--band-label); }
+  .crumb a { color: var(--band-label); }
+  .crumb a:hover { color: var(--band-text); }
+  h1 { margin: 0 0 18px; font-family: var(--font-sc); font-weight: 600; font-size: clamp(40px, 5.5vw, 68px); line-height: 1.02; }
+  .tagline { margin: 0 0 36px; max-width: 760px; font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 24px; color: var(--band-sub); }
+  .is-prompt { opacity: 0.8; }
+
+  .page { padding-top: 56px; padding-bottom: 112px; }
+  .intro { max-width: 720px; margin-bottom: 40px; }
+  .intro :global(p) { margin: 0 0 14px; font-size: 20px; color: var(--text-lead); }
+  .intro :global(p.prompt) { color: var(--muted); }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+  .filters[hidden] { display: none; }
+  .filters button {
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    font-size: 11px;
+    padding: 8px 14px;
+    border: 1px solid var(--rule-soft);
+    background: transparent;
+    color: var(--text-soft);
+    cursor: pointer;
+  }
+  .filters button span { color: var(--muted); margin-left: 6px; }
+  .filters button[aria-pressed='true'] { border-color: var(--accent); color: var(--accent); }
+  .filters button:hover { border-color: var(--text-soft); }
+
+  .projects { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 56px 32px; }
+  .projects li[hidden] { display: none; }
+  .proj { display: flex; flex-direction: column; gap: 10px; height: 100%; text-decoration: none; color: var(--text); }
+  a.proj:hover .name { color: var(--accent); }
+  .name { margin-top: 6px; font-family: var(--font-sc); font-weight: 600; font-size: 26px; line-height: 1.1; }
+  .tagline-sm { color: var(--text-soft); font-size: 17px; line-height: 1.45; }
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  .status { font-size: 10px; padding: 4px 8px; border: 1px solid currentColor; }
+  .s-done { color: var(--accent); }
+  .s-active { color: var(--text-soft); }
+  .s-planned { color: var(--stamp); }
+  .plat { font-size: 10px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 10px; letter-spacing: 0.08em; text-transform: none; padding: 3px 7px; background: var(--ph-bg); color: var(--text-soft); }
+  .go { margin-top: auto; padding-top: 4px; color: var(--accent); font-size: 11px; }
+
+  @media (max-width: 1000px) { .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) {
+    .band-inner { padding-top: 48px; padding-bottom: 48px; }
+    .projects { grid-template-columns: 1fr; }
+  }
+</style>

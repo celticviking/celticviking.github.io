@@ -47,6 +47,7 @@ const log = defineCollection({
       date: entryDate,
       room: z.enum(roomIds),
       houseRoom: reference('house').optional(),
+      labProject: reference('lab').optional(),   // e.g. apps/sectortray: also shows on that project's page
       tags: z.array(z.string()).default([]),
       summary: z.string().optional(),
       cover: image().optional(),
@@ -90,4 +91,58 @@ const house = defineCollection({
   },
 });
 
-export const collections = { log, house };
+// THE LAB lives in src/content/lab/.
+//   apps.md, cyberdecks.md, prints.md, games.md   one file per category (its card and intro text)
+//   apps/sectortray.md                              one file per project, in its category's folder
+//   apps/sectortray/                                that project's screenshots or photos
+// The folder a project sits in decides its category and its address: /lab/apps/sectortray/
+const labCategories = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/lab' }),
+  schema: z.object({
+    title: z.string(),
+    order: z.number(),
+    status: z.enum(['open', 'planned']).default('open'),
+    tagline: z.string().optional(),
+    accent: z.string().default('#9FE86B'),     // the category's colour: card bar and terminal label
+  }),
+});
+
+const lab = defineCollection({
+  loader: glob({ pattern: '*/*.md', base: './src/content/lab' }),
+  schema: ({ image }) => {
+    const slot = z.object({
+      photo: image().optional(),
+      alt: z.string().optional(),
+      label: z.string().default('Photo'),
+      caption: z.string().optional(),
+    });
+    // A list that may be left empty in the file (every line under it commented out).
+    const list = <T extends z.ZodType>(item: T) => z.preprocess((v) => v ?? [], z.array(item));
+    return z.object({
+      title: z.string(),
+      status: z.enum(['planned', 'in-progress', 'prototype', 'released', 'finished']),
+      version: z.string().optional(),            // shown instead of "Released", e.g. v0.6.0
+      platform: z.string().optional(),
+      tagline: z.string().optional(),
+      updated: entryDate.optional(),             // for "recently updated"; a newer logbook entry about it counts too
+      page: z.boolean().default(false),          // true = the card opens its own page
+      tags: list(z.string()),
+      facts: list(z.object({ label: z.string(), value: z.string() })),
+      links: list(z.object({ label: z.string(), url: z.string().url() })),
+      cover: slot.optional(),
+      gallery: list(slot),
+    });
+  },
+});
+
+// PAGE TEXT lives in src/content/pages/: one file per page with the words at the top of that page.
+const pages = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/pages' }),
+  schema: z.object({
+    title: z.string(),
+    kicker: z.string().optional(),       // the small line above the title
+    description: z.string().optional(),  // for search engines and link previews
+  }),
+});
+
+export const collections = { log, house, lab, labCategories, pages };

@@ -1,0 +1,118 @@
+---
+// The Lab: the categories as cards (2 × 2), each showing its projects' photos fanned
+// like polaroids, under a terminal listing the most recently updated projects.
+// Words: src/content/pages/lab.md (intro) and src/content/lab/<category>.md (each card).
+import Base from '../../layouts/Base.astro';
+import PhotoFan from '../../components/PhotoFan.astro';
+import LabTerminal from '../../components/LabTerminal.astro';
+import LogCard from '../../components/LogCard.astro';
+import { getLabCategories, getLabProjects, categoryOf, categoryUrl, statusLabel, byRecent, type LabStatus } from '../../lib/lab';
+import { getLog } from '../../lib/log';
+import { pageText } from '../../lib/pages';
+import { isPrompt } from '../../lib/house';
+
+const { data: page, html: intro } = await pageText('lab');
+const categories = await getLabCategories();
+const projects = (await getLabProjects()).sort(byRecent);
+const open = categories.filter((c) => c.data.status === 'open');
+const planned = categories.filter((c) => c.data.status === 'planned');
+const catInfo = Object.fromEntries(categories.map((c) => [c.id, { title: c.data.title, accent: c.data.accent }]));
+const entries = (await getLog('lab')).slice(0, 3);
+
+const order: LabStatus[] = ['released', 'finished', 'in-progress', 'prototype', 'planned'];
+const cards = open.map((c) => {
+  const mine = projects.filter((p) => categoryOf(p) === c.id);
+  const photos = mine.filter((p) => p.data.cover?.photo).map((p) => ({ photo: p.data.cover!.photo!, alt: p.data.cover!.alt }));
+  const counts = order
+    .map((s) => [s, mine.filter((p) => p.data.status === s).length] as const)
+    .filter(([, n]) => n > 0)
+    .map(([s, n]) => `${n} ${statusLabel(s).toLowerCase()}`);
+  return { c, photos, counts: counts.join(' · ') || 'Nothing here yet' };
+});
+---
+<Base title={page.title} description={page.description} palette="lab">
+  <section class="band">
+    <div class="wrap band-inner">
+      {page.kicker && <p class="mono kicker">{page.kicker}</p>}
+      <h1>{page.title}</h1>
+      <div class="intro" set:html={intro} />
+      <LabTerminal projects={projects} categories={catInfo} />
+    </div>
+  </section>
+
+  <div class="wrap page">
+    <ul class="cats">
+      {cards.map(({ c, photos, counts }) => (
+        <li>
+          <a class="cat" href={categoryUrl(c)}>
+            <span class="accent" style={`background:${c.data.accent}`} aria-hidden="true" />
+            <PhotoFan photos={photos} label={`Photos of ${c.data.title.toLowerCase()} to come`} />
+            <span class="mono muted small">{counts}</span>
+            <span class="name">{c.data.title}</span>
+            {c.data.tagline && <span class:list={['tagline', { prompt: isPrompt(c.data.tagline) }]}>{c.data.tagline}</span>}
+            <span class="mono go">Enter →</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {planned.length > 0 && (
+      <section class="planned" aria-labelledby="planned-h">
+        <div class="section-head"><h2 id="planned-h">Still to Come</h2></div>
+        <ul class="planned-list">
+          {planned.map((c) => (
+            <li>
+              <span class="accent" style={`background:${c.data.accent}`} aria-hidden="true" />
+              <span class="name">{c.data.title}</span>
+              {c.data.tagline && <span class="tagline">{c.data.tagline}</span>}
+              <span class="mono stamp">Planned</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {entries.length > 0 && (
+      <section class="log" aria-labelledby="log-h">
+        <div class="section-head"><h2 id="log-h">From the Logbook</h2></div>
+        <div class="grid">{entries.map((e) => <LogCard entry={e} />)}</div>
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .band { background: var(--band); color: var(--band-text); }
+  .band-inner { padding-top: 72px; padding-bottom: 72px; }
+  .kicker { margin: 0 0 20px; color: var(--band-label); }
+  h1 { margin: 0 0 22px; font-family: var(--font-sc); font-weight: 600; font-size: clamp(44px, 6vw, 72px); line-height: 1.02; }
+  .intro { max-width: 720px; margin-bottom: 40px; }
+  .intro :global(p) { margin: 0 0 14px; font-size: 21px; color: var(--band-sub); }
+  .intro :global(p.prompt) { color: var(--band-sub); opacity: 0.75; }
+
+  .page { padding-top: 80px; padding-bottom: 112px; }
+  .cats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px 40px; }
+  .cat { display: flex; flex-direction: column; gap: 12px; height: 100%; text-decoration: none; color: var(--text); }
+  .cat:hover .name { color: var(--accent); }
+  .accent { display: block; height: 6px; }
+  .small { font-size: 11px; margin-top: 6px; }
+  .name { font-family: var(--font-sc); font-weight: 600; font-size: 32px; line-height: 1.08; }
+  .tagline { color: var(--text-soft); font-size: 18px; }
+  .go { margin-top: auto; padding-top: 6px; color: var(--accent); }
+
+  .planned { margin-top: 112px; border-top: 1px solid var(--rule); padding-top: 40px; }
+  .planned-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
+  .planned-list li { display: flex; flex-direction: column; gap: 10px; }
+  .planned-list .accent { opacity: 0.45; }
+  .planned-list .name { font-size: 26px; color: var(--text-soft); }
+  .stamp { align-self: flex-start; border: 1.5px solid var(--stamp); color: var(--stamp); padding: 6px 10px; transform: rotate(-2deg); }
+
+  .log { margin-top: 112px; border-top: 1px solid var(--rule); padding-top: 40px; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 40px; }
+
+  @media (max-width: 860px) {
+    .band-inner { padding-top: 56px; padding-bottom: 56px; }
+    .page { padding-top: 56px; }
+    .cats, .grid, .planned-list { grid-template-columns: 1fr; }
+  }
+</style>

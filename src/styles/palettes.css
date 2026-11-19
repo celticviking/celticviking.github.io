@@ -69,3 +69,19 @@
   --ph-bg: #1A1F1C; --ph-border: #354039; --hatch: rgba(233, 235, 228, 0.05); --chip-border: rgba(233, 235, 228, 0.25);
   --band: #2C3D37;
 }
+
+/* ---------- The Lab: terminal black, phosphor green, amber ---------- */
+:root[data-palette='lab'] {
+  --bg: #EEF1EA; --ink: #0F1A12; --text: #0F1A12; --text-lead: #223026; --text-soft: #354238;
+  --muted: #4E5C50; --accent: #2F6B1F; --mark: #0F1A12; --rule: #0F1A12; --rule-soft: #CBD3C6;
+  --ph-bg: #E2E7DD; --ph-border: #C2CBBC; --hatch: rgba(15, 26, 18, 0.08); --chip-border: rgba(15, 26, 18, 0.3);
+  --stamp: #7A4E00;
+  --band: #0A0E0A; --band-text: #E4F2DA; --band-sub: #B8CDAA; --band-label: #9FE86B; --band-rule: #3F5A3F;
+}
+:root[data-palette='lab'][data-theme='dark'] {
+  --bg: #0B0F0C; --ink: #DCE8D4; --text: #DCE8D4; --text-lead: #C6D4BE; --text-soft: #B2C2AA;
+  --muted: #8DA085; --accent: #9FE86B; --mark: #9FE86B; --rule: #2A3A2F; --rule-soft: #1B261F;
+  --ph-bg: #121A15; --ph-border: #2A3A2F; --hatch: rgba(220, 232, 212, 0.05); --chip-border: rgba(220, 232, 212, 0.25);
+  --stamp: #FFB84A;
+  --band: #050805;
+}
