@@ -35,12 +35,13 @@ const groups = [
 ].map((g) => ({ ...g, n: all.filter((p) => statusGroup(p.data.status) === g.key).length })).filter((g) => g.n > 0);
 ---
 <Base title={`${d.title} · The Lab`} description={isPrompt(d.tagline) ? undefined : d.tagline} palette="lab">
-  <section class="band">
+  <!-- The band takes the category's own colour (always on black, so it stays readable). -->
+  <section class="band" style={`--band-label:${d.accent}`}>
     <div class="wrap band-inner">
-      <p class="mono crumb"><a href="/lab/">The Lab</a> / <span style={`color:${d.accent}`}>{cat.id}</span></p>
+      <p class="mono crumb"><a href="/lab/">The Lab</a> / <span>{cat.id}</span></p>
       <h1>{d.title}</h1>
       {d.tagline && <p class:list={['tagline', { 'is-prompt': isPrompt(d.tagline) }]}>{d.tagline}</p>}
-      <LabTerminal projects={recent} categories={catInfo} path={`~/lab/${cat.id}`} showCategory={false} />
+      <LabTerminal projects={recent} categories={catInfo} path={`~/lab/${cat.id}`} showCategory={false} tint={d.accent} />
     </div>
   </section>
 

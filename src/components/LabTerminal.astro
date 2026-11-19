@@ -1,7 +1,9 @@
 ---
 // The thin terminal on /lab/ and each category page: the most recently updated projects.
-// Amber phosphor, like the Halcyon Reach OS screens. Always dark, whatever the page's theme. Names link to a project's page when it has one.
+// Phosphor-coloured: amber on /lab/ (like the Halcyon Reach OS screens), and each category's
+// own colour on its page. Always dark, whatever the page's theme. Names link to a project's page.
 import { categoryOf, slugOf, projectUrl, statusText, isoDay, type LabProject } from '../lib/lab';
+import { mixHex } from '../lib/color';
 
 type P = LabProject & { lastUpdated?: Date };
 interface Props {
@@ -9,11 +11,21 @@ interface Props {
   categories: Record<string, { title: string; accent: string }>;
   path?: string;                                    // shown in the prompt, e.g. "~/lab/apps"
   showCategory?: boolean;
+  tint?: string;                                    // the phosphor colour; amber by default
 }
-const { projects, categories, path = '~/lab', showCategory = true } = Astro.props;
+const { projects, categories, path = '~/lab', showCategory = true, tint = '#FFB84A' } = Astro.props;
+// Text, dim labels and frame lines are mixed from the tint; all checked readable on the black background.
+const bg = '#090908';
+const vars = [
+  `--t-hi:${tint}`,
+  `--t-text:${mixHex(tint, '#FFFFFF', 0.45)}`,
+  `--t-dim:${mixHex(mixHex(tint, '#9A9A9A', 0.35), bg, 0.2)}`,
+  `--t-line:${mixHex(tint, bg, 0.78)}`,
+  `--t-bar:${mixHex(tint, bg, 0.86)}`,
+].join(';');
 const rows = projects.filter((p) => p.lastUpdated).slice(0, 3);
 ---
-<section class="term" aria-label="Recently updated projects">
+<section class="term" style={vars} aria-label="Recently updated projects">
   <div class="bar" aria-hidden="true"><span class="dot" /><span class="dot" /><span class="dot" /><span class="title">vahn@lab: {path}</span></div>
   <div class="body">
     <p class="cmd"><span class="ps1">vahn@lab:{path}$</span> ls --recent</p>
@@ -55,19 +67,16 @@ const rows = projects.filter((p) => p.lastUpdated).slice(0, 3);
 <style>
   .term {
     --t-bg: #090908;
-    --t-text: #f2d49b;
-    --t-dim: #a08a62;
-    --t-hi: #ffb84a;
     background: var(--t-bg);
     color: var(--t-text);
-    border: 1px solid #3a3226;
+    border: 1px solid var(--t-line);
     font-family: var(--font-mono);
     font-size: 13px;
     line-height: 1.6;
     text-align: left;
   }
-  .bar { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-bottom: 1px solid #241f18; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: #3a3226; }
+  .bar { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-bottom: 1px solid var(--t-bar); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--t-line); }
   .title { margin-left: 8px; color: var(--t-dim); font-size: 11px; letter-spacing: 0.08em; }
   .body { padding: 12px 16px 14px; overflow-x: auto; }
   .cmd { margin: 0; white-space: nowrap; }
@@ -86,7 +95,7 @@ const rows = projects.filter((p) => p.lastUpdated).slice(0, 3);
   }
   td { padding: 2px 28px 2px 0; white-space: nowrap; }
   th:last-child, td:last-child { padding-right: 0; }
-  .name a { color: var(--t-hi); text-decoration: none; border-bottom: 1px dotted rgba(255, 184, 74, 0.5); }
+  .name a { color: var(--t-hi); text-decoration: none; border-bottom: 1px dotted var(--t-dim); }
   .name a:hover { border-bottom-style: solid; }
   .name a:focus-visible { outline: 2px solid var(--t-hi); outline-offset: 2px; }
   .cursor {

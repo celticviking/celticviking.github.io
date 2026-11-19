@@ -23,7 +23,7 @@ facts:
 
 wide:                         # the big 16:9 photo under the banner (also this room's card on The House page)
   label: "Photo · the finished room, wide"
-  photo: ./workshop/fin-tinker-master-01.png
+  photo: ./workshop/fin-tinker-master-01.jpg
   alt: "The finished tinker's workbench in the indoor tinker's workshop"
 
 # BEFORE & AFTER (4:3 frames): one shot each, or more for extra angles. Keep the angles in the same
@@ -70,7 +70,7 @@ found: "Prusa CORE One 3D printer; Hakko FX888D-23BY soldering station"
 # DETAILS (square frames): close-ups near the bottom, in rows of three. Add or remove as many as you like.
 details:
   - label: "Detail · the copper ceiling"
-    photo: ./workshop/fin-copper-ceiling-01.png
+    photo: ./workshop/fin-copper-ceiling-01.jpg
     alt: "The copper-tin ceiling and copper-tin crown moulding"
     caption: "Copper-tin ceiling"
   - label: "Detail · Cabinet verdigris hardware"

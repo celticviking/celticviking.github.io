@@ -38,10 +38,11 @@ const facts = [
 ];
 ---
 <Base title={`${d.title} · The Lab`} description={isPrompt(d.tagline) ? undefined : d.tagline} palette="lab">
-  <section class="band">
+  <!-- The band takes the category's own colour (always on black, so it stays readable). -->
+  <section class="band" style={`--band-label:${cat.data.accent}`}>
     <div class="wrap band-inner">
       <p class="mono crumb">
-        <a href="/lab/">The Lab</a> / <a href={categoryUrl(cat)} style={`color:${cat.data.accent}`}>{cat.data.title}</a>
+        <a href="/lab/">The Lab</a> / <a href={categoryUrl(cat)}>{cat.data.title}</a>
       </p>
       <h1>{d.title}</h1>
       {d.tagline && <p class:list={['tagline', { 'is-prompt': isPrompt(d.tagline) }]}>{d.tagline}</p>}
